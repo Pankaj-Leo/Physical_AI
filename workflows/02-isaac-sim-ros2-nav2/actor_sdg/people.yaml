@@ -1,0 +1,28 @@
+# Walking humans as dynamic obstacles for Nav2 (Isaac Sim tutorial #15, Actor SDG / Isaac Sim Replicator Agent).
+# Not executed here. Tutorial #15 ran on Isaac Sim 6.1.0, not 5.0.0 (the Isaac Sim Assets browser moved to the
+# Content tab in 6.x).
+#
+# Load it in Isaac Sim: Window > Extensions, enable "Actor SDG" and "Actor SDG UI"; Tools > Action and Event Data
+# Generation > Actor SDG > load this file > Set Up Simulation > Play.
+#
+# The tutorial names two fields that matter: the environment USD path and the number of characters (it went 1 -> 7).
+# The author's own file is only linked from the video description, so the surrounding schema below is
+# reconstructed. verify: top-level key, version, and field names against the YAML your Actor SDG UI saves.
+isaacsim.replicator.agent:
+  version: 0.7.0
+  global:
+    seed: 42
+    simulation_length: 9000  # frames
+  scene:
+    # Tutorial #15: environments/simple_warehouse/warehouse_with_forklifts.usd, which already contains a NavMesh.
+    # Prefix with your assets root (local download or the NVIDIA cloud bucket).
+    asset_path: /Isaac/Environments/Simple_Warehouse/warehouse_with_forklifts.usd
+  character:
+    num: 7
+    # Random walking inside the baked NavMesh. To keep people out of an area, add a plane, Add > Navigation >
+    # NavMesh Area (Non-walkable), then Window > Navigation > NavMesh > Bake (tutorial #15).
+    filters: []
+  robot:
+    nova_carter_num: 0  # the SIL robot comes from build_graphs.py, not from Actor SDG
+  sensor:
+    camera_num: 0

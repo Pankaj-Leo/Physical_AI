@@ -1,0 +1,292 @@
+{
+  "config": {
+    "worlds": 3,
+    "width": 160,
+    "height": 90,
+    "frames": 121,
+    "fps": 30,
+    "substeps": 32,
+    "fov_deg": 60.0,
+    "max_roll_deg": 50.0,
+    "camera_eye": [
+      1.5,
+      -1.5,
+      0.9
+    ],
+    "camera_target": [
+      0.0,
+      0.0,
+      0.3
+    ],
+    "depth_far_m": 8.0,
+    "device": "cpu",
+    "graph": null,
+    "write_png": true,
+    "write_mp4": true,
+    "rolls_deg": []
+  },
+  "device": "cpu",
+  "graph": true,
+  "shape_count": 40,
+  "first_render_ms_incl_compile": 74.0,
+  "median_render_ms_per_frame_all_worlds": 16.79,
+  "median_sim_ms_per_frame_all_worlds": 4.45,
+  "pixels_per_frame": 43200,
+  "worlds": [
+    {
+      "world": 0,
+      "initial_roll_deg": 0.0,
+      "fps": 30,
+      "frames": 121,
+      "resolution": [
+        160,
+        90
+      ],
+      "camera": {
+        "eye": [
+          1.5,
+          -1.5,
+          0.9
+        ],
+        "target": [
+          0.0,
+          0.0,
+          0.3
+        ],
+        "fov_deg_vertical": 60.0,
+        "convention": "camera -Z forward, +Y up; world Z up"
+      },
+      "videos": {
+        "color": "world_000_color.mp4",
+        "depth": "world_000_depth.mp4",
+        "seg": "world_000_seg.mp4"
+      },
+      "fell": false,
+      "fall_frame": null,
+      "fall_rule": "base z < 0.25 m or tilt > 60.0 deg",
+      "forward_distance_m": 0.0319,
+      "max_tilt_deg": 1.0,
+      "min_base_z_m": 0.4396,
+      "semantic_classes": {
+        "0": {
+          "name": "background",
+          "rgb": [
+            0,
+            0,
+            0
+          ]
+        },
+        "1": {
+          "name": "ground",
+          "rgb": [
+            90,
+            90,
+            90
+          ]
+        },
+        "2": {
+          "name": "base",
+          "rgb": [
+            40,
+            110,
+            220
+          ]
+        },
+        "3": {
+          "name": "hip",
+          "rgb": [
+            240,
+            140,
+            20
+          ]
+        },
+        "4": {
+          "name": "thigh",
+          "rgb": [
+            40,
+            180,
+            70
+          ]
+        },
+        "5": {
+          "name": "shank",
+          "rgb": [
+            230,
+            210,
+            40
+          ]
+        }
+      }
+    },
+    {
+      "world": 1,
+      "initial_roll_deg": 25.0,
+      "fps": 30,
+      "frames": 121,
+      "resolution": [
+        160,
+        90
+      ],
+      "camera": {
+        "eye": [
+          1.5,
+          -1.5,
+          0.9
+        ],
+        "target": [
+          0.0,
+          0.0,
+          0.3
+        ],
+        "fov_deg_vertical": 60.0,
+        "convention": "camera -Z forward, +Y up; world Z up"
+      },
+      "videos": {
+        "color": "world_001_color.mp4",
+        "depth": "world_001_depth.mp4",
+        "seg": "world_001_seg.mp4"
+      },
+      "fell": true,
+      "fall_frame": 14,
+      "fall_rule": "base z < 0.25 m or tilt > 60.0 deg",
+      "forward_distance_m": -0.1474,
+      "max_tilt_deg": 178.55,
+      "min_base_z_m": 0.1013,
+      "semantic_classes": {
+        "0": {
+          "name": "background",
+          "rgb": [
+            0,
+            0,
+            0
+          ]
+        },
+        "1": {
+          "name": "ground",
+          "rgb": [
+            90,
+            90,
+            90
+          ]
+        },
+        "2": {
+          "name": "base",
+          "rgb": [
+            40,
+            110,
+            220
+          ]
+        },
+        "3": {
+          "name": "hip",
+          "rgb": [
+            240,
+            140,
+            20
+          ]
+        },
+        "4": {
+          "name": "thigh",
+          "rgb": [
+            40,
+            180,
+            70
+          ]
+        },
+        "5": {
+          "name": "shank",
+          "rgb": [
+            230,
+            210,
+            40
+          ]
+        }
+      }
+    },
+    {
+      "world": 2,
+      "initial_roll_deg": 50.0,
+      "fps": 30,
+      "frames": 121,
+      "resolution": [
+        160,
+        90
+      ],
+      "camera": {
+        "eye": [
+          1.5,
+          -1.5,
+          0.9
+        ],
+        "target": [
+          0.0,
+          0.0,
+          0.3
+        ],
+        "fov_deg_vertical": 60.0,
+        "convention": "camera -Z forward, +Y up; world Z up"
+      },
+      "videos": {
+        "color": "world_002_color.mp4",
+        "depth": "world_002_depth.mp4",
+        "seg": "world_002_seg.mp4"
+      },
+      "fell": true,
+      "fall_frame": 8,
+      "fall_rule": "base z < 0.25 m or tilt > 60.0 deg",
+      "forward_distance_m": 0.0014,
+      "max_tilt_deg": 177.24,
+      "min_base_z_m": 0.1078,
+      "semantic_classes": {
+        "0": {
+          "name": "background",
+          "rgb": [
+            0,
+            0,
+            0
+          ]
+        },
+        "1": {
+          "name": "ground",
+          "rgb": [
+            90,
+            90,
+            90
+          ]
+        },
+        "2": {
+          "name": "base",
+          "rgb": [
+            40,
+            110,
+            220
+          ]
+        },
+        "3": {
+          "name": "hip",
+          "rgb": [
+            240,
+            140,
+            20
+          ]
+        },
+        "4": {
+          "name": "thigh",
+          "rgb": [
+            40,
+            180,
+            70
+          ]
+        },
+        "5": {
+          "name": "shank",
+          "rgb": [
+            230,
+            210,
+            40
+          ]
+        }
+      }
+    }
+  ]
+}

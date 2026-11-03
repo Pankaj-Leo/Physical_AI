@@ -1,0 +1,89 @@
+{
+  "reference_vs_variant_vs_local": {
+    "steps": {
+      "reference only": {
+        "value": "red",
+        "strongest_opinion": "red_cube.usda:/Cube.primvars:displayColor"
+      },
+      "variant black selected": {
+        "value": "black",
+        "strongest_opinion": "shot.usda:/World/cube_reference{paint=black}.primvars:displayColor"
+      },
+      "variant switched to white": {
+        "value": "white",
+        "strongest_opinion": "shot.usda:/World/cube_reference{paint=white}.primvars:displayColor"
+      },
+      "local pink authored, variant still black": {
+        "value": "pink",
+        "strongest_opinion": "shot.usda:/World/cube_reference.primvars:displayColor"
+      }
+    },
+    "final": "pink",
+    "expected": "pink",
+    "ok": true
+  },
+  "sublayer_order": {
+    "steps": {
+      "subLayers [green, blue]": {
+        "value": "green",
+        "strongest_opinion": "green_layer.usda:/World/box.primvars:displayColor"
+      },
+      "subLayers [blue, green]": {
+        "value": "blue",
+        "strongest_opinion": "blue_layer.usda:/World/box.primvars:displayColor"
+      }
+    },
+    "final": "blue",
+    "expected": "blue",
+    "ok": true
+  },
+  "local_vs_inherit": {
+    "steps": {
+      "inherits class green": {
+        "value": "green",
+        "strongest_opinion": "inherit.usda:/_robot_paint.primvars:displayColor"
+      },
+      "local pink authored": {
+        "value": "pink",
+        "strongest_opinion": "inherit.usda:/World/box.primvars:displayColor"
+      }
+    },
+    "final": "pink",
+    "expected": "pink",
+    "ok": true
+  },
+  "reference_vs_payload": {
+    "steps": {
+      "reference red + payload blue": {
+        "value": "red",
+        "strongest_opinion": "ref_red.usda:/Cube.primvars:displayColor"
+      },
+      "payload-only attr": {
+        "value": "from payload",
+        "strongest_opinion": ""
+      }
+    },
+    "final": "red",
+    "expected": "red",
+    "ok": true
+  },
+  "payload_unloaded": {
+    "steps": {
+      "LoadNone: payload-only attr present?": {
+        "value": "False",
+        "strongest_opinion": ""
+      },
+      "color": {
+        "value": "red",
+        "strongest_opinion": "ref_red.usda:/Cube.primvars:displayColor"
+      },
+      "after stage.Load(): payload-only attr": {
+        "value": "from payload",
+        "strongest_opinion": ""
+      }
+    },
+    "final": "False",
+    "expected": "False",
+    "ok": true
+  }
+}

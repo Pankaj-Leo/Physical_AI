@@ -1,0 +1,16 @@
+# Lines to add to the app manifest the Kit App Template generated, e.g.
+#   source/apps/my_company.my_usd_composer.kit
+# A .kit file is TOML. Merge these tables into the existing ones (do not duplicate [dependencies]).
+#
+# Gotcha (Introduction 04, 04:51-05:19): "You need to add the extension before building otherwise the extension will
+# not be available in your application." Edit the .kit file, then ./repo.sh build, then ./repo.sh launch.
+
+[dependencies]
+"omni.physx.bundle" = {}           # physics is not in the template by default (Introduction 01, 07:41-08:38)
+"omni.kit.variant.presenter" = {}  # Tools > Variants > Variant Presenter (Basic Training 02 and 08)
+"physicalai.atlas.tools" = {}      # this extension
+
+# Only needed if the extension is NOT copied into the template's source/extensions/ folder: tell Kit where to look.
+# Replace the path with the absolute path of this repo's 10-omniverse-kit-extension/exts folder.
+[settings.app.exts]
+folders.'++' = ["/ABSOLUTE/PATH/TO/physical-ai-project/workflows/10-omniverse-kit-extension/exts"]

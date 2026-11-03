@@ -1,0 +1,11 @@
+{
+  "date_utc": "2026-10-03T19:02:37+00:00",
+  "python": "3.11.15",
+  "platform": "Linux-6.18.44-fc-v64-x86_64-with-glibc2.39",
+  "usd": "0.26.8",
+  "newton": "1.7.0.dev0",
+  "warp": "1.17.0",
+  "numpy": "2.4.6",
+  "device": "cpu",
+  "note": "CPU-only container; no GPU was used."
+}

@@ -1,0 +1,17 @@
+__pycache__/
+*.py[cod]
+.pytest_cache/
+.ruff_cache/
+.venv/
+venv/
+*.egg-info/
+build/
+dist/
+.ipynb_checkpoints/
+# Large or regenerable outputs
+results/**/*.mp4
+results/**/*.usd
+results/**/*.usdc
+results/phase1/
+results/phase2/
+transfer_requests/

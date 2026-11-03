@@ -1,0 +1,3 @@
+# Rendered PNG/mp4 clips and scratch outputs (regenerate with the commands in run_cpu.sh)
+out/
+*.mp4

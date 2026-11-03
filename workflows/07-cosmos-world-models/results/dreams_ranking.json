@@ -1,0 +1,237 @@
+{
+  "what": "Toy ranking-preservation study (CPU). Conceptual reproduction of the NuRec vs Cosmos-Dreams policy-ranking check; no Cosmos model involved.",
+  "seeds": [
+    0,
+    1,
+    2,
+    3,
+    4,
+    5,
+    6,
+    7,
+    8,
+    9
+  ],
+  "chunk_frames": 8,
+  "dt_s": 0.1,
+  "episode_chunks": 15,
+  "score": "progress_m - 100*collided - 10*lane_departure_s",
+  "renderers": {
+    "exact": {
+      "name": "exact",
+      "noise_std": 0.0,
+      "box_jitter_m": 0.0,
+      "drop_prob": 0.0,
+      "lane_drift_m": 0.0,
+      "ghost": 0.0
+    },
+    "mild": {
+      "name": "mild",
+      "noise_std": 0.1,
+      "box_jitter_m": 0.2,
+      "drop_prob": 0.0,
+      "lane_drift_m": 0.0,
+      "ghost": 0.0
+    },
+    "moderate": {
+      "name": "moderate",
+      "noise_std": 0.15,
+      "box_jitter_m": 0.4,
+      "drop_prob": 0.1,
+      "lane_drift_m": 0.3,
+      "ghost": 0.25
+    },
+    "severe": {
+      "name": "severe",
+      "noise_std": 0.25,
+      "box_jitter_m": 0.8,
+      "drop_prob": 0.25,
+      "lane_drift_m": 0.8,
+      "ghost": 0.5
+    }
+  },
+  "policies": {
+    "cautious": {
+      "name": "cautious",
+      "v0": 10.0,
+      "T": 2.0,
+      "s0": 4.0,
+      "a_max": 1.5,
+      "b": 2.0,
+      "k_steer": 1.0,
+      "lookahead_s": 0.8
+    },
+    "nominal": {
+      "name": "nominal",
+      "v0": 13.0,
+      "T": 1.5,
+      "s0": 3.0,
+      "a_max": 2.0,
+      "b": 2.5,
+      "k_steer": 1.0,
+      "lookahead_s": 0.8
+    },
+    "eager": {
+      "name": "eager",
+      "v0": 16.0,
+      "T": 1.0,
+      "s0": 2.5,
+      "a_max": 2.5,
+      "b": 3.0,
+      "k_steer": 1.0,
+      "lookahead_s": 0.8
+    },
+    "understeer": {
+      "name": "understeer",
+      "v0": 13.0,
+      "T": 1.5,
+      "s0": 3.0,
+      "a_max": 2.0,
+      "b": 2.5,
+      "k_steer": 0.35,
+      "lookahead_s": 0.8
+    },
+    "tailgater": {
+      "name": "tailgater",
+      "v0": 17.0,
+      "T": 0.5,
+      "s0": 1.0,
+      "a_max": 3.0,
+      "b": 4.0,
+      "k_steer": 1.0,
+      "lookahead_s": 0.8
+    }
+  },
+  "mean_score": {
+    "exact": {
+      "cautious": 99.715,
+      "nominal": 103.83,
+      "eager": 106.102,
+      "understeer": 93.995,
+      "tailgater": 68.68
+    },
+    "mild": {
+      "cautious": 99.736,
+      "nominal": 103.794,
+      "eager": 106.208,
+      "understeer": 93.917,
+      "tailgater": 57.861
+    },
+    "moderate": {
+      "cautious": 100.401,
+      "nominal": 94.49,
+      "eager": 96.641,
+      "understeer": 78.38,
+      "tailgater": 68.274
+    },
+    "severe": {
+      "cautious": 50.553,
+      "nominal": 11.381,
+      "eager": -11.366,
+      "understeer": 5.2,
+      "tailgater": -18.788
+    }
+  },
+  "ranking": {
+    "exact": [
+      "eager",
+      "nominal",
+      "cautious",
+      "understeer",
+      "tailgater"
+    ],
+    "mild": [
+      "eager",
+      "nominal",
+      "cautious",
+      "understeer",
+      "tailgater"
+    ],
+    "moderate": [
+      "cautious",
+      "eager",
+      "nominal",
+      "understeer",
+      "tailgater"
+    ],
+    "severe": [
+      "cautious",
+      "nominal",
+      "understeer",
+      "eager",
+      "tailgater"
+    ]
+  },
+  "kendall_tau_vs_exact": {
+    "exact": 1.0,
+    "mild": 1.0,
+    "moderate": 0.6,
+    "severe": 0.2
+  },
+  "per_seed_tau_vs_exact_mean": {
+    "exact": 1.0,
+    "mild": 0.86,
+    "moderate": 0.84,
+    "severe": -0.28
+  },
+  "collisions": {
+    "exact": {
+      "cautious": 0,
+      "nominal": 0,
+      "eager": 0,
+      "understeer": 0,
+      "tailgater": 4
+    },
+    "mild": {
+      "cautious": 0,
+      "nominal": 0,
+      "eager": 0,
+      "understeer": 0,
+      "tailgater": 5
+    },
+    "moderate": {
+      "cautious": 0,
+      "nominal": 1,
+      "eager": 1,
+      "understeer": 1,
+      "tailgater": 4
+    },
+    "severe": {
+      "cautious": 1,
+      "nominal": 5,
+      "eager": 8,
+      "understeer": 5,
+      "tailgater": 9
+    }
+  },
+  "lane_departure_s_mean": {
+    "exact": {
+      "cautious": 0.0,
+      "nominal": 0.0,
+      "eager": 0.0,
+      "understeer": 0.98,
+      "tailgater": 0.0
+    },
+    "mild": {
+      "cautious": 0.0,
+      "nominal": 0.0,
+      "eager": 0.0,
+      "understeer": 0.99,
+      "tailgater": 0.0
+    },
+    "moderate": {
+      "cautious": 0.0,
+      "nominal": 0.0,
+      "eager": 0.0,
+      "understeer": 1.6,
+      "tailgater": 0.0
+    },
+    "severe": {
+      "cautious": 3.94,
+      "nominal": 4.08,
+      "eager": 2.87,
+      "understeer": 4.39,
+      "tailgater": 2.35
+    }
+  }
+}

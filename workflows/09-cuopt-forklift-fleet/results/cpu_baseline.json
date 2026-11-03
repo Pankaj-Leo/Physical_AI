@@ -1,0 +1,182 @@
+{
+  "what": "CPU baseline for the cuOpt forklift routing request (not cuOpt, not Isaac Sim)",
+  "time_model": {
+    "speed_mps": 1.5,
+    "service_time_s_per_job": 10.0,
+    "route": "depot -> jobs -> depot over shortest waypoint paths",
+    "source_of_speed": "forklift-fleet-live.jpg (Forklift_C DRIVING 1.50 m/s)",
+    "service_time": "our assumption"
+  },
+  "environment": {
+    "python": "3.11.15",
+    "machine": "x86_64"
+  },
+  "scenarios": [
+    {
+      "scenario": "screenshot_2_forklifts_6_jobs",
+      "notes": "11x9 waypoints at 4 m read off forklift-fleet-*.jpg; box and target cells approximate",
+      "grid": {
+        "cols": 11,
+        "rows": 9,
+        "spacing_m": 4.0
+      },
+      "waypoints": 89,
+      "directed_edges": 292,
+      "obstacle_cells": 6,
+      "no_entry_zones": 1,
+      "forklifts": 2,
+      "jobs": 6,
+      "capacity_per_forklift": 3,
+      "makespan_lower_bound_s": 52.667,
+      "results": {
+        "makespan_insertion_only": {
+          "makespan_s": 83.333,
+          "total_route_time_s": 156.0,
+          "jobs_per_vehicle": {
+            "Forklift_B": 3,
+            "Forklift_C": 3
+          },
+          "idle_vehicles": 0,
+          "solver_wall_ms": 0.7
+        },
+        "makespan+local_search": {
+          "makespan_s": 83.333,
+          "total_route_time_s": 156.0,
+          "jobs_per_vehicle": {
+            "Forklift_B": 3,
+            "Forklift_C": 3
+          },
+          "idle_vehicles": 0,
+          "solver_wall_ms": 0.8
+        },
+        "total_insertion_only": {
+          "makespan_s": 83.333,
+          "total_route_time_s": 156.0,
+          "jobs_per_vehicle": {
+            "Forklift_B": 3,
+            "Forklift_C": 3
+          },
+          "idle_vehicles": 0,
+          "solver_wall_ms": 0.6
+        },
+        "total+local_search": {
+          "makespan_s": 83.333,
+          "total_route_time_s": 156.0,
+          "jobs_per_vehicle": {
+            "Forklift_B": 3,
+            "Forklift_C": 3
+          },
+          "idle_vehicles": 0,
+          "solver_wall_ms": 1.0
+        },
+        "makespan_exact": {
+          "makespan_s": 83.333,
+          "total_route_time_s": 156.0,
+          "jobs_per_vehicle": {
+            "Forklift_B": 3,
+            "Forklift_C": 3
+          }
+        },
+        "total_exact": {
+          "makespan_s": 83.333,
+          "total_route_time_s": 156.0,
+          "jobs_per_vehicle": {
+            "Forklift_B": 3,
+            "Forklift_C": 3
+          }
+        }
+      }
+    },
+    {
+      "scenario": "random_5_forklifts_20_targets",
+      "notes": "random layout, seed 7; rows and depot placement are our choice",
+      "grid": {
+        "cols": 30,
+        "rows": 20,
+        "spacing_m": 4.0
+      },
+      "waypoints": 580,
+      "directed_edges": 2152,
+      "obstacle_cells": 20,
+      "no_entry_zones": 0,
+      "forklifts": 5,
+      "jobs": 20,
+      "capacity_per_forklift": 10,
+      "makespan_lower_bound_s": 164.667,
+      "results": {
+        "makespan_insertion_only": {
+          "makespan_s": 226.0,
+          "total_route_time_s": 1021.333,
+          "jobs_per_vehicle": {
+            "Forklift_1": 6,
+            "Forklift_2": 5,
+            "Forklift_3": 3,
+            "Forklift_4": 3,
+            "Forklift_5": 3
+          },
+          "idle_vehicles": 0,
+          "solver_wall_ms": 16.7
+        },
+        "makespan+local_search": {
+          "makespan_s": 216.0,
+          "total_route_time_s": 1037.333,
+          "jobs_per_vehicle": {
+            "Forklift_1": 6,
+            "Forklift_2": 4,
+            "Forklift_3": 4,
+            "Forklift_4": 3,
+            "Forklift_5": 3
+          },
+          "idle_vehicles": 0,
+          "solver_wall_ms": 19.9
+        },
+        "total_insertion_only": {
+          "makespan_s": 330.0,
+          "total_route_time_s": 637.333,
+          "jobs_per_vehicle": {
+            "Forklift_1": 10,
+            "Forklift_2": 1,
+            "Forklift_3": 0,
+            "Forklift_4": 9,
+            "Forklift_5": 0
+          },
+          "idle_vehicles": 2,
+          "solver_wall_ms": 14.4
+        },
+        "total+local_search": {
+          "makespan_s": 324.667,
+          "total_route_time_s": 616.0,
+          "jobs_per_vehicle": {
+            "Forklift_1": 10,
+            "Forklift_2": 1,
+            "Forklift_3": 0,
+            "Forklift_4": 9,
+            "Forklift_5": 0
+          },
+          "idle_vehicles": 2,
+          "solver_wall_ms": 18.7
+        }
+      }
+    }
+  ],
+  "gap_study": {
+    "instances": 20,
+    "jobs": 7,
+    "forklifts": 2,
+    "grid": "11x9 at 4 m, 8 random obstacle cells",
+    "insertion_only": {
+      "mean_gap_pct": 4.82,
+      "max_gap_pct": 20.13,
+      "optimal_count": 8
+    },
+    "insertion+local_search": {
+      "mean_gap_pct": 1.9,
+      "max_gap_pct": 16.11,
+      "optimal_count": 14
+    }
+  },
+  "wizard_reference_not_comparable": {
+    "2_forklifts_6_jobs_physics_duration": "1:05 (forklift-fleet-complete.jpg; Wizard #2 promo)",
+    "5_forklifts_20_targets_kinematic_estimate": "about 5 min (Wizard #2 promo, caption)"
+  }
+}

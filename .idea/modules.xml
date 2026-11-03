@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="ProjectModuleManager">
+    <modules>
+      <module fileurl="file://$PROJECT_DIR$/.idea/Physical AI.iml" filepath="$PROJECT_DIR$/.idea/Physical AI.iml" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/atlas_rl_tasks.iml" filepath="$PROJECT_DIR$/.idea/atlas_rl_tasks.iml" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/sand-solvers-worldmodels.iml" filepath="$PROJECT_DIR$/.idea/sand-solvers-worldmodels.iml" />
+    </modules>
+  </component>
+</project>

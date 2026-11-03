@@ -1,0 +1,16 @@
+{
+  "policy": "shipped anymal_walking_policy_physx.onnx",
+  "frames": 150,
+  "sim_time_s": 3.0,
+  "command": [
+    1.0,
+    0.0,
+    0.0
+  ],
+  "forward_distance_m": 2.7144,
+  "lateral_drift_m": 0.0393,
+  "mean_forward_speed_mps": 0.9048,
+  "min_base_z_m": 0.5067,
+  "fell": false,
+  "device": "cpu"
+}

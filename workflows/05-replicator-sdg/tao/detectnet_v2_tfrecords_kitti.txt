@@ -1,0 +1,17 @@
+# TAO DetectNet_v2 dataset_convert spec: KITTI -> TFRecords, one file per distractor set (Basic Training 06, 25:34-28:52).
+# run_tao.sh copies this template and replaces __SET__ with distractors_warehouse, distractors_additional, no_distractors.
+# val_split 14 is the "14% of the samples reserved for this evaluation" the tutorial reports (40:04-40:09); the train
+# spec selects that partition with validation_fold: 0.
+# Paths are inside the TAO container (/workspace/tao-experiments is mounted from $LOCAL_PROJECT_DIR via ~/.tao_mounts.json).
+# Pinned: TAO Toolkit 5.x launcher (pip install nvidia-tao), DetectNet_v2. not executed: needs GPU and an NGC key.
+kitti_config {
+  root_directory_path: "/workspace/tao-experiments/data/__SET__/Camera"
+  image_dir_name: "rgb"
+  label_dir_name: "object_detection"
+  image_extension: ".png"
+  partition_mode: "random"
+  num_partitions: 2
+  val_split: 14
+  num_shards: 10
+}
+image_directory_path: "/workspace/tao-experiments/data/__SET__/Camera"

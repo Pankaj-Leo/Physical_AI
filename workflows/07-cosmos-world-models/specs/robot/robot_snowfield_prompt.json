@@ -1,0 +1,61 @@
+{
+  "subjects": [
+    {
+      "description": "A four-legged industrial inspection robot with a boxy gray body and four jointed legs",
+      "appearance_details": "Matte gray shell, black joints, sensor heads at the front and rear",
+      "relationship": "The only moving subject in the scene",
+      "location": "Center of frame, on the ground",
+      "relative_size": "Medium within frame",
+      "orientation": "Side view, facing right",
+      "pose": "Standing on four legs, trotting",
+      "action": "Walking forward across loose sand that deforms and leaves footprints",
+      "state_changes": "Moves steadily from left to right; feet press into the ground surface.",
+      "number_of_subjects": 1,
+      "number_of_legs": 4
+    }
+  ],
+  "background_setting": "A flat snowfield of fresh, powdery snow with faint boot tracks, a line of conifers and gray mountains in the distance.",
+  "lighting": {
+    "conditions": "Overcast winter daylight",
+    "direction": "Diffuse, top-down skylight",
+    "shadows": "Very soft, low-contrast shadows",
+    "illumination_effect": "Even, cool illumination with bright snow highlights"
+  },
+  "aesthetics": {
+    "composition": "Robot centered, walking toward the right of frame",
+    "color_scheme": "Cool whites and blue-grays; dark green trees; gray robot",
+    "mood_atmosphere": "Cold, calm outdoor trial"
+  },
+  "cinematography": {
+    "camera_motion": "Static camera",
+    "framing": "Wide shot with the whole robot and the ground around it visible",
+    "camera_angle": "Slightly elevated, three-quarter side view",
+    "depth_of_field": "Deep",
+    "focus": "Sharp focus on the robot"
+  },
+  "style_medium": "Live-action video",
+  "artistic_style": "Documentary, observational realism",
+  "context": "Field test of a legged robot on deformable terrain",
+  "actions": [
+    {
+      "time": "0:00-0:04",
+      "description": "The robot walks forward across loose sand that deforms and leaves footprints."
+    }
+  ],
+  "segments": [
+    {
+      "segment_index": 0,
+      "time_range": "0:00-0:04",
+      "description": "A continuous static shot of the quadruped robot walking across loose sand that deforms and leaves footprints."
+    }
+  ],
+  "transitions": [],
+  "temporal_caption": "Throughout the clip the quadruped robot walks steadily forward across loose sand that deforms and leaves footprints.",
+  "resolution": {
+    "W": 1280,
+    "H": 720
+  },
+  "aspect_ratio": "16,9",
+  "duration": "4s",
+  "fps": 30
+}

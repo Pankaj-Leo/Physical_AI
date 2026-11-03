@@ -1,0 +1,70 @@
+{
+  "passed": true,
+  "checks": [
+    {
+      "name": "stage_opens",
+      "ok": true,
+      "detail": "104 prims composed; composition errors: none"
+    },
+    {
+      "name": "default_prim",
+      "ok": true,
+      "detail": "defaultPrim = /quadruped"
+    },
+    {
+      "name": "up_axis",
+      "ok": true,
+      "detail": "upAxis = Z (expected Z)"
+    },
+    {
+      "name": "meters_per_unit",
+      "ok": true,
+      "detail": "metersPerUnit = 1.0, kilogramsPerUnit = 1.0"
+    },
+    {
+      "name": "layer_units_agree",
+      "ok": true,
+      "detail": "10 layers; all agree"
+    },
+    {
+      "name": "payloads_resolve",
+      "ok": true,
+      "detail": "4 payload arcs; all resolve"
+    },
+    {
+      "name": "payloads_effective",
+      "ok": true,
+      "detail": "rigid bodies with payloads loaded: 13, unloaded: 0"
+    },
+    {
+      "name": "single_articulation",
+      "ok": true,
+      "detail": "articulation roots: ['/quadruped']; rigid bodies: 13"
+    },
+    {
+      "name": "joint_limits",
+      "ok": true,
+      "detail": "12 joints; bad: none"
+    },
+    {
+      "name": "joint_bodies",
+      "ok": true,
+      "detail": "bad targets: none"
+    },
+    {
+      "name": "bodies_have_mass",
+      "ok": true,
+      "detail": "missing mass: none"
+    },
+    {
+      "name": "bodies_have_collider",
+      "ok": true,
+      "detail": "no collider: none"
+    },
+    {
+      "name": "colliders_not_visible",
+      "ok": true,
+      "detail": "13 colliders; rendered colliders: none; visual meshes with CollisionAPI: none"
+    }
+  ]
+}

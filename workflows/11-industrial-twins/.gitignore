@@ -1,0 +1,3 @@
+# Scratch outputs and GPU-run artifacts (PhysicsNeMo checkpoints)
+out/
+*.mdlus

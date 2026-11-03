@@ -1,0 +1,15 @@
+device,solver,world_count,graph,fps,substeps,warmup_frames,frames,build_s,warmup_s,wall_s,ms_per_frame,env_steps_per_s,realtime_factor,sim_array_mb,mem_kind,mem_mb,finite,base_z_mean_m
+cpu,xpbd,1,False,100,10,5,50,1.823,0.183,0.6401,12.803,78.1,0.781,0.103,cpu_peak_rss,366.1,True,0.4695
+cpu,xpbd,2,False,100,10,5,50,0.068,0.163,0.6963,13.926,143.6,1.436,0.113,cpu_peak_rss,372.1,True,0.4695
+cpu,xpbd,4,False,100,10,5,50,0.277,0.188,0.6842,13.683,292.3,2.923,0.135,cpu_peak_rss,374.4,True,0.4695
+cpu,xpbd,1,True,100,10,5,50,1.828,0.288,0.042,0.84,1189.9,11.899,0.103,cpu_peak_rss,366.3,True,0.4555
+cpu,xpbd,2,True,100,10,5,50,0.077,0.236,0.0607,1.213,1648.4,16.484,0.113,cpu_peak_rss,371.8,True,0.4555
+cpu,xpbd,4,True,100,10,5,50,0.266,0.232,0.0721,1.442,2774.4,27.744,0.135,cpu_peak_rss,373.5,True,0.4555
+cpu,xpbd,16,True,100,10,5,50,0.073,0.269,0.2125,4.25,3764.9,37.649,0.266,cpu_peak_rss,379.0,True,0.4555
+cpu,xpbd,64,True,100,10,5,50,0.094,0.401,0.8321,16.642,3845.7,38.457,1.062,cpu_peak_rss,386.3,True,0.4555
+cpu,mujoco_warp,1,False,100,10,5,20,2.843,0.655,1.3551,67.756,14.8,0.148,0.011,cpu_peak_rss,442.0,True,0.4454
+cpu,mujoco_warp,2,False,100,10,5,20,0.091,0.348,1.3904,69.518,28.8,0.288,0.022,cpu_peak_rss,443.5,True,0.4454
+cpu,mujoco_warp,4,False,100,10,5,20,0.094,0.338,1.4232,71.161,56.2,0.562,0.043,cpu_peak_rss,444.6,True,0.4454
+cpu,mujoco_warp,1,True,100,10,5,20,2.96,0.798,0.0177,0.887,1127.5,11.275,0.011,cpu_peak_rss,443.8,True,0.4508
+cpu,mujoco_warp,4,True,100,10,5,20,0.09,0.52,0.0536,2.68,1492.5,14.925,0.043,cpu_peak_rss,445.8,True,0.4508
+cpu,mujoco_warp,16,True,100,10,5,20,0.088,3.336,0.2448,12.241,1307.1,13.071,0.171,cpu_peak_rss,496.1,True,0.4508

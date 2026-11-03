@@ -1,0 +1,159 @@
+# TAO DetectNet_v2 training spec, ResNet-18 backbone, one class "palletjack" (Basic Training 06, 30:36-32:46).
+# The tutorial opens the notebook's detectnet_v2_train_resnet18_kitti.txt, lists its sections (dataset, augmentation,
+# model, training, evaluation, bbox rasterizer, cost function, postprocessing) and leaves it at the defaults. That file
+# is not in this repo; the values below are the standard single-class DetectNet_v2 starting point and are marked
+# "verify" where they matter. 960x544 input: both sides are multiples of 16, as DetectNet_v2 requires.
+# Paths are inside the TAO container. Pinned: TAO Toolkit 5.x. not executed: needs GPU and an NGC key.
+random_seed: 42
+dataset_config {
+  data_sources {
+    tfrecords_path: "/workspace/tao-experiments/data/tfrecords/distractors_warehouse/*"
+    image_directory_path: "/workspace/tao-experiments/data/distractors_warehouse/Camera"
+  }
+  data_sources {
+    tfrecords_path: "/workspace/tao-experiments/data/tfrecords/distractors_additional/*"
+    image_directory_path: "/workspace/tao-experiments/data/distractors_additional/Camera"
+  }
+  data_sources {
+    tfrecords_path: "/workspace/tao-experiments/data/tfrecords/no_distractors/*"
+    image_directory_path: "/workspace/tao-experiments/data/no_distractors/Camera"
+  }
+  image_extension: "png"
+  target_class_mapping {
+    key: "palletjack"
+    value: "palletjack"
+  }
+  validation_fold: 0
+}
+augmentation_config {
+  preprocessing {
+    output_image_width: 960
+    output_image_height: 544
+    min_bbox_width: 1.0
+    min_bbox_height: 1.0
+    output_image_channel: 3
+  }
+  spatial_augmentation {
+    hflip_probability: 0.5
+    zoom_min: 1.0
+    zoom_max: 1.0
+    translate_max_x: 8.0
+    translate_max_y: 8.0
+  }
+  color_augmentation {
+    hue_rotation_max: 25.0
+    saturation_shift_max: 0.2
+    contrast_scale_max: 0.1
+    contrast_center: 0.5
+  }
+}
+postprocessing_config {
+  target_class_config {
+    key: "palletjack"
+    value {
+      clustering_config {
+        clustering_algorithm: DBSCAN
+        dbscan_confidence_threshold: 0.9
+        coverage_threshold: 0.005
+        dbscan_eps: 0.2
+        dbscan_min_samples: 0.05
+        minimum_bounding_box_height: 20
+      }
+    }
+  }
+}
+model_config {
+  # verify: file name inside the NGC download nvidia/tao/pretrained_detectnet_v2:resnet18
+  pretrained_model_file: "/workspace/tao-experiments/detectnet_v2/pretrained_resnet18/pretrained_detectnet_v2_vresnet18/resnet18.hdf5"
+  num_layers: 18
+  use_batch_norm: true
+  objective_set {
+    bbox {
+      scale: 35.0
+      offset: 0.5
+    }
+    cov {
+    }
+  }
+  arch: "resnet"
+}
+evaluation_config {
+  validation_period_during_training: 10
+  first_validation_epoch: 10
+  minimum_detection_ground_truth_overlap {
+    key: "palletjack"
+    value: 0.5
+  }
+  evaluation_box_config {
+    key: "palletjack"
+    value {
+      minimum_height: 20
+      maximum_height: 9999
+      minimum_width: 10
+      maximum_width: 9999
+    }
+  }
+  average_precision_mode: INTEGRATE
+}
+cost_function_config {
+  target_classes {
+    name: "palletjack"
+    class_weight: 1.0
+    coverage_foreground_weight: 0.05
+    objectives {
+      name: "cov"
+      initial_weight: 1.0
+      weight_target: 1.0
+    }
+    objectives {
+      name: "bbox"
+      initial_weight: 10.0
+      weight_target: 10.0
+    }
+  }
+  enable_autoweighting: true
+  max_objective_weight: 0.9999
+  min_objective_weight: 0.0001
+}
+training_config {
+  batch_size_per_gpu: 16  # verify: notebook default; lower it if the GPU runs out of memory
+  num_epochs: 100  # verify: notebook default; the tutorial's run took 1 h 45 min on one GPU (35:23)
+  learning_rate {
+    soft_start_annealing_schedule {
+      min_learning_rate: 5e-06
+      max_learning_rate: 5e-04
+      soft_start: 0.1
+      annealing: 0.7
+    }
+  }
+  regularizer {
+    type: L1
+    weight: 3e-09
+  }
+  optimizer {
+    adam {
+      epsilon: 9.9e-09
+      beta1: 0.9
+      beta2: 0.999
+    }
+  }
+  cost_scaling {
+    initial_exponent: 20.0
+    increment: 0.005
+    decrement: 1.0
+  }
+  checkpoint_interval: 10
+}
+bbox_rasterizer_config {
+  target_class_config {
+    key: "palletjack"
+    value {
+      cov_center_x: 0.5
+      cov_center_y: 0.5
+      cov_radius_x: 0.4
+      cov_radius_y: 0.4
+      bbox_min_radius: 1.0
+    }
+  }
+  deadzone_radius: 0.4
+}

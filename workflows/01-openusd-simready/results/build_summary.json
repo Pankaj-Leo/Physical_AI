@@ -1,0 +1,110 @@
+{
+  "urdf": "quadruped.urdf",
+  "links": 13,
+  "joints": 12,
+  "unique_parts": [
+    "cylinder_r020_l250",
+    "cylinder_r040_l050",
+    "cylinder_r100_l750"
+  ],
+  "instanced_visuals": 13,
+  "prototypes": 3,
+  "joint_limits": [
+    {
+      "joint": "LF_HAA",
+      "lower_deg": -45.0,
+      "upper_deg": 45.0,
+      "limit_source": "gap-fill (JOINT_LIMITS_DEG)",
+      "effort": 80.0
+    },
+    {
+      "joint": "LF_HFE",
+      "lower_deg": -90.0,
+      "upper_deg": 90.0,
+      "limit_source": "gap-fill (JOINT_LIMITS_DEG)",
+      "effort": 80.0
+    },
+    {
+      "joint": "LF_KFE",
+      "lower_deg": -90.0,
+      "upper_deg": 90.0,
+      "limit_source": "gap-fill (JOINT_LIMITS_DEG)",
+      "effort": 80.0
+    },
+    {
+      "joint": "RF_HAA",
+      "lower_deg": -45.0,
+      "upper_deg": 45.0,
+      "limit_source": "gap-fill (JOINT_LIMITS_DEG)",
+      "effort": 80.0
+    },
+    {
+      "joint": "RF_HFE",
+      "lower_deg": -90.0,
+      "upper_deg": 90.0,
+      "limit_source": "gap-fill (JOINT_LIMITS_DEG)",
+      "effort": 80.0
+    },
+    {
+      "joint": "RF_KFE",
+      "lower_deg": -90.0,
+      "upper_deg": 90.0,
+      "limit_source": "gap-fill (JOINT_LIMITS_DEG)",
+      "effort": 80.0
+    },
+    {
+      "joint": "LH_HAA",
+      "lower_deg": -45.0,
+      "upper_deg": 45.0,
+      "limit_source": "gap-fill (JOINT_LIMITS_DEG)",
+      "effort": 80.0
+    },
+    {
+      "joint": "LH_HFE",
+      "lower_deg": -90.0,
+      "upper_deg": 90.0,
+      "limit_source": "gap-fill (JOINT_LIMITS_DEG)",
+      "effort": 80.0
+    },
+    {
+      "joint": "LH_KFE",
+      "lower_deg": -90.0,
+      "upper_deg": 90.0,
+      "limit_source": "gap-fill (JOINT_LIMITS_DEG)",
+      "effort": 80.0
+    },
+    {
+      "joint": "RH_HAA",
+      "lower_deg": -45.0,
+      "upper_deg": 45.0,
+      "limit_source": "gap-fill (JOINT_LIMITS_DEG)",
+      "effort": 80.0
+    },
+    {
+      "joint": "RH_HFE",
+      "lower_deg": -90.0,
+      "upper_deg": 90.0,
+      "limit_source": "gap-fill (JOINT_LIMITS_DEG)",
+      "effort": 80.0
+    },
+    {
+      "joint": "RH_KFE",
+      "lower_deg": -90.0,
+      "upper_deg": 90.0,
+      "limit_source": "gap-fill (JOINT_LIMITS_DEG)",
+      "effort": 80.0
+    }
+  ],
+  "layers": {
+    "materials.usda": 1669,
+    "parts.usda": 9394,
+    "asset_base.usda": 8669,
+    "asset_sim_base.usda": 9857,
+    "asset_sim_optimized.usda": 2655,
+    "asset_physics.usda": 19122,
+    "asset_sensors.usda": 1064,
+    "asset_ros.usda": 1792,
+    "asset_control.usda": 2732,
+    "asset.usda": 556
+  }
+}

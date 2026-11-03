@@ -1,0 +1,16 @@
+# Isaac Lab external projects ship this file (the isaaclab.sh --new template generates one). It lets Isaac Lab's
+# tooling treat the package as an extension; pip install -e does not need it.
+[package]
+version = "0.1.0"
+title = "Atlas RL tasks"
+description = "Workflow atlas 04: G1 left-arm push task, manager-based, rsl_rl PPO"
+keywords = ["isaaclab", "rl", "humanoid", "manipulation"]
+
+[dependencies]
+"isaaclab" = {}
+"isaaclab_assets" = {}
+"isaaclab_rl" = {}
+"isaaclab_tasks" = {}
+
+[[python.module]]
+name = "atlas_rl_tasks"

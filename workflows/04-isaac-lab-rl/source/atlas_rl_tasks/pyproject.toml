@@ -1,0 +1,17 @@
+# Installed into the Isaac Lab conda env (tutorial #14, 07:43-08:03):
+#   cd physical-ai-project/workflows/04-isaac-lab-rl
+#   ${ISAACLAB_PATH}/isaaclab.sh -p -m pip install -e source/atlas_rl_tasks
+[build-system]
+requires = ["setuptools>=64"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "atlas_rl_tasks"
+version = "0.1.0"
+description = "Workflow atlas 04: a manager-based Isaac Lab task (G1 left-arm push) trained with rsl_rl PPO"
+requires-python = ">=3.10"
+# isaaclab, isaaclab_assets, isaaclab_rl and isaacsim come from the Isaac Lab install; not listed so pip leaves them.
+dependencies = []
+
+[tool.setuptools.packages.find]
+include = ["atlas_rl_tasks*"]

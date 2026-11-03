@@ -1,0 +1,13 @@
+# Lint config for figure generators (mirrors physical-ai-project/workflows/ruff.toml).
+line-length = 120
+target-version = "py310"
+
+[lint]
+select = ["E", "F", "W", "I", "B", "UP", "PL", "RUF", "SIM", "NPY"]
+ignore = [
+    "PLR0912", # too many branches
+    "PLR0913", # too many arguments
+    "PLR0915", # too many statements
+    "PLR2004", # magic values are fine for physics and robot parameters
+    "PLC0415", # local imports keep isaacsim / omni / torch optional at import time
+]

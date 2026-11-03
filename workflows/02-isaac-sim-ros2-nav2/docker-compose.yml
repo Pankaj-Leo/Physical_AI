@@ -1,0 +1,67 @@
+# Software-in-the-loop: Isaac Sim (body) + ROS 2 Jazzy / Nav2 (brain) on one host, one DDS bus.
+# Not executed here (no GPU, no Docker). Pinned: Isaac Sim 5.0.0 container, ROS 2 Jazzy (Ubuntu 24.04 base).
+#
+# Wizard step 3: "Start the container that shares the DDS bus with Isaac Sim (host networking, same ROS_DOMAIN_ID)".
+# Both services read ROS_DOMAIN_ID from the same anchor; the ROS2Context node has useDomainIDEnvVar=True
+# (inspector screenshot), so the env var is what Isaac Sim actually uses.
+#
+#   export ROS_DOMAIN_ID=0          # default in the wizard; another value lets a second "brain" drive a second robot
+#   docker compose build nav2
+#   docker compose up isaac-sim     # wait until /clock appears (see README)
+#   docker compose up nav2
+
+x-ros-env: &ros-env
+  ROS_DOMAIN_ID: ${ROS_DOMAIN_ID:-0}
+  RMW_IMPLEMENTATION: rmw_fastrtps_cpp
+
+services:
+  isaac-sim:
+    image: nvcr.io/nvidia/isaac-sim:5.0.0
+    network_mode: host  # DDS discovery over localhost between the two containers
+    deploy:
+      resources:
+        reservations:
+          devices:
+            - driver: nvidia
+              count: all
+              capabilities: [gpu]
+    environment:
+      <<: *ros-env
+      ACCEPT_EULA: "Y"
+      PRIVACY_CONSENT: "Y"
+      # Isaac Sim's bundled ROS 2 libraries (no ROS install in this container). verify: path for 5.0.0.
+      ROS_DISTRO: jazzy
+      LD_LIBRARY_PATH: /isaac-sim/exts/isaacsim.ros2.bridge/jazzy/lib
+      # Wizard step 3: UDP only on the Isaac side; shared memory cannot cross the container boundary.
+      FASTRTPS_DEFAULT_PROFILES_FILE: /ws/dds/fastdds_udp_only.xml
+    volumes:
+      - ./:/ws:ro
+      - ${HOME}/docker/isaac-sim/cache/kit:/isaac-sim/kit/cache:rw
+      - ${HOME}/docker/isaac-sim/cache/ov:/root/.cache/ov:rw
+      - ${HOME}/docker/isaac-sim/cache/glcache:/root/.cache/nvidia/GLCache:rw
+      - ${HOME}/docker/isaac-sim/cache/computecache:/root/.nv/ComputeCache:rw
+      - ${HOME}/docker/isaac-sim/logs:/root/.nvidia-omniverse/logs:rw
+    # ISAAC_MODE=build: our graphs in the tutorial #15 warehouse (bring your own occupancy map, see README).
+    # ISAAC_MODE=sample: NVIDIA's Nova Carter navigation sample with its own graphs (matches the carter map).
+    entrypoint: ["/isaac-sim/python.sh", "/ws/build_graphs.py"]
+    command: ["--robot", "nova_carter", "--mode", "${ISAAC_MODE:-build}", "--headless", "--play"]
+
+  nav2:
+    build: ./nav2
+    image: ros2-nav2:jazzy  # tag from the wizard step 2 infographic
+    network_mode: host
+    environment:
+      <<: *ros-env
+      # Brain side keeps the default Fast DDS transports (wizard step 3, "Nav2 internal services stay solid").
+      DISPLAY: ${DISPLAY:-:0}  # RViz2; run `xhost +local:` on the host first
+    volumes:
+      - ./:/ws
+      - /tmp/.X11-unix:/tmp/.X11-unix:rw
+    depends_on:
+      - isaac-sim
+    command:
+      - ros2
+      - launch
+      - /ws/nav2/bringup.launch.py
+      - map:=${MAP:-/ws/nav2/maps/carter_warehouse_navigation.yaml}
+      - params:=${NAV2_PARAMS:-/ws/nav2/nav2_params.yaml}

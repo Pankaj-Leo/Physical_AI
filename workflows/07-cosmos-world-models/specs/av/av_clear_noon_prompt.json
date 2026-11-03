@@ -1,0 +1,101 @@
+{
+  "subjects": [
+    {
+      "description": "A dark gray four-door sedan driving ahead in the same lane",
+      "appearance_details": "Clean paint, red tail lights, standard alloy wheels",
+      "relationship": "Lead vehicle followed by the recording vehicle",
+      "location": "Center of frame, in the right lane ahead",
+      "relative_size": "Small to medium within frame",
+      "orientation": "Facing away from camera",
+      "pose": "Vehicle in motion",
+      "action": "Drives ahead, then brakes firmly and slows down",
+      "state_changes": "Brake lights turn on and the gap to the recording vehicle shrinks",
+      "number_of_subjects": 1,
+      "number_of_arms": 0,
+      "number_of_legs": 0
+    },
+    {
+      "description": "A white compact SUV in the opposite lane",
+      "appearance_details": "White paint, headlights on",
+      "relationship": "Oncoming traffic",
+      "location": "Left lane, approaching from the distance",
+      "relative_size": "Small, growing as it approaches",
+      "orientation": "Facing the camera",
+      "pose": "Vehicle in motion",
+      "action": "Passes the recording vehicle on the left",
+      "state_changes": "Approaches and leaves the frame on the left",
+      "number_of_subjects": 1,
+      "number_of_arms": 0,
+      "number_of_legs": 0
+    },
+    {
+      "description": "The hood of the recording vehicle at the bottom of the frame",
+      "appearance_details": "Dark glossy hood",
+      "relationship": "The host vehicle carrying the dashcam",
+      "location": "Lower foreground",
+      "relative_size": "Large within frame",
+      "orientation": "Facing forward",
+      "pose": "Moving forward",
+      "action": "Follows the gently curving road",
+      "state_changes": "Slows down when the lead vehicle brakes",
+      "number_of_subjects": 1,
+      "number_of_arms": 0,
+      "number_of_legs": 0
+    }
+  ],
+  "background_setting": "A two-lane suburban road with a double yellow center line, sidewalks, low houses, and leafy trees under a clear blue sky.",
+  "lighting": {
+    "conditions": "Clear midday sun",
+    "direction": "High overhead",
+    "shadows": "Short, crisp shadows under the cars and trees",
+    "illumination_effect": "Bright, saturated, high-contrast scene"
+  },
+  "aesthetics": {
+    "composition": "Dashcam framing with the hood in the lower third and the road vanishing at the center",
+    "color_scheme": "Saturated greens and blues, gray asphalt",
+    "mood_atmosphere": "Calm commute"
+  },
+  "cinematography": {
+    "camera_motion": "Forward-moving vehicle-mounted camera",
+    "framing": "Wide shot",
+    "camera_angle": "Eye-level",
+    "depth_of_field": "Deep",
+    "focus": "Sharp focus on the road ahead",
+    "lens_focal_length": "Wide-angle dashcam lens"
+  },
+  "style_medium": "Live-action video",
+  "artistic_style": "Documentary dashcam realism",
+  "context": "Dashcam footage from a car following another car on a curving two-lane suburban road",
+  "actions": [
+    {
+      "time": "0:00-0:04",
+      "description": "The recording vehicle follows the sedan along the curving road."
+    },
+    {
+      "time": "0:04-0:07",
+      "description": "The sedan brakes firmly; the recording vehicle slows behind it."
+    },
+    {
+      "time": "0:07-0:10",
+      "description": "An oncoming SUV passes on the left while both cars drive on slowly."
+    }
+  ],
+  "segments": [
+    {
+      "segment_index": 0,
+      "time_range": "0:00-0:10",
+      "description": "Continuous forward dashcam view following a sedan that brakes, with oncoming traffic.",
+      "key_changes": "Lead vehicle brake event",
+      "camera": "Vehicle-mounted, moving forward"
+    }
+  ],
+  "transitions": [],
+  "temporal_caption": "From 0:00 to 0:04 the car follows a gray sedan along a curving suburban road. From 0:04 to 0:07 the sedan brakes and the gap closes as the car slows. From 0:07 to 0:10 a white SUV passes in the opposite lane.",
+  "resolution": {
+    "W": 1280,
+    "H": 720
+  },
+  "aspect_ratio": "16,9",
+  "duration": "10s",
+  "fps": 10
+}

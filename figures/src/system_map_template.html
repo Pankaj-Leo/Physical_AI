@@ -1,0 +1,274 @@
+<title>Physical AI System Map</title>
+<style>
+/*FONT_FACE*/
+/* Layout: one wide engineering drawing (layers as rows, computers as columns), flow filters above it,
+   a details panel below that shows the selected component and the NVIDIA slide it comes from.
+   Color carries meaning: column tint = where it runs; edge color = which data flow. */
+:root {
+  --bg: #f3f5f7;
+  --sheet: #ffffff;
+  --ink: #161b22;
+  --muted: #5b6573;
+  --rule: #d6dce3;
+  --band-real: #eceef1;
+  --band-train: #efeafb;
+  --band-sim: #e7f0fa;
+  --band-deploy: #e3f3ef;
+  --k-real: #6b7685;
+  --k-train: #6a52b5;
+  --k-sim: #2b67a8;
+  --k-deploy: #18806f;
+  --f-robot: #2b67a8;
+  --f-data: #7b55c9;
+  --f-av: #c25a22;
+  --f-ops: #148a77;
+  --f-loop: #6b7685;
+  --hw: #e6e9ee;
+  --evidence: #d4a017;
+  --font-ui: "Plex Condensed", "IBM Plex Sans Condensed", "Arial Narrow", "Roboto Condensed", Arial, sans-serif;
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --bg: #0e1216; --sheet: #161b22; --ink: #e6e9ee; --muted: #9aa5b3; --rule: #2a323c;
+    --band-real: #151a20; --band-train: #1a1726; --band-sim: #121c27; --band-deploy: #10201c;
+    --k-real: #9aa5b3; --k-train: #ab9bf0; --k-sim: #7fb0e8; --k-deploy: #5cc9b5;
+    --f-robot: #7fb0e8; --f-data: #b49bf2; --f-av: #f0a072; --f-ops: #5cc9b5; --f-loop: #9aa5b3;
+    --hw: #1c232b; --evidence: #f0c46b; color-scheme: dark;
+  }
+}
+:root[data-theme="dark"] {
+  --bg: #0e1216; --sheet: #161b22; --ink: #e6e9ee; --muted: #9aa5b3; --rule: #2a323c;
+  --band-real: #151a20; --band-train: #1a1726; --band-sim: #121c27; --band-deploy: #10201c;
+  --k-real: #9aa5b3; --k-train: #ab9bf0; --k-sim: #7fb0e8; --k-deploy: #5cc9b5;
+  --f-robot: #7fb0e8; --f-data: #b49bf2; --f-av: #f0a072; --f-ops: #5cc9b5; --f-loop: #9aa5b3;
+  --hw: #1c232b; --evidence: #f0c46b; color-scheme: dark;
+}
+* { box-sizing: border-box; }
+body { background: var(--bg); color: var(--ink); font-family: var(--font-ui); font-size: 15px; line-height: 1.5; }
+.page { max-width: 1760px; margin: 0 auto; padding-inline: 18px; padding-block: 22px 40px; display: grid; gap: 14px; }
+header h1 { font-size: clamp(1.7rem, 3.2vw, 2.4rem); line-height: 1.05; margin: 0 0 6px; font-weight: 700; text-wrap: balance; }
+header p { margin: 0; max-width: 78ch; color: var(--muted); }
+header p b { color: var(--ink); font-weight: 600; }
+
+.controls { display: flex; flex-wrap: wrap; gap: 8px; align-items: center; }
+.controls .lbl { font-size: 12px; letter-spacing: .08em; text-transform: uppercase; color: var(--muted); margin-right: 4px; font-weight: 600; }
+.chip { font: inherit; font-size: 14px; display: inline-flex; align-items: center; gap: 7px; padding: 5px 12px; border-radius: 999px; border: 1px solid var(--rule); background: var(--sheet); color: var(--ink); cursor: pointer; }
+.chip i { width: 18px; height: 3px; border-radius: 2px; background: var(--c); display: inline-block; }
+.chip[aria-pressed="true"] { border-color: var(--c, var(--ink)); box-shadow: inset 0 0 0 1px var(--c, var(--ink)); }
+.chip:focus-visible, .node:focus-visible { outline: 2px solid var(--f-robot); outline-offset: 2px; }
+
+.diagram { overflow-x: auto; border: 1px solid var(--rule); border-radius: 10px; background: var(--sheet); }
+#map { display: block; width: 100%; min-width: 1420px; height: auto; font-family: var(--font-ui); }
+.colband { stroke: none; }
+.col-real { fill: var(--band-real); } .col-train { fill: var(--band-train); } .col-sim { fill: var(--band-sim); } .col-deploy { fill: var(--band-deploy); }
+.coltitle { font-size: 14px; font-weight: 700; letter-spacing: .08em; fill: var(--ink); }
+.col-train-t { fill: var(--k-train); } .col-sim-t { fill: var(--k-sim); } .col-deploy-t { fill: var(--k-deploy); } .col-real-t { fill: var(--k-real); }
+.colsub { font-size: 12px; fill: var(--muted); }
+.layerline { stroke: var(--rule); stroke-dasharray: 3 5; }
+.layerlabel { font-size: 11px; font-weight: 600; letter-spacing: .1em; fill: var(--muted); }
+.hw { fill: var(--hw); stroke: var(--rule); }
+.hwicon { color: var(--muted); }
+.hwtext { font-size: 12.5px; font-weight: 600; fill: var(--ink); }
+
+.node { cursor: pointer; }
+.node rect { fill: var(--sheet); stroke: var(--rule); stroke-width: 1.2; transition: stroke .15s; }
+.node.k-train rect { stroke: var(--k-train); } .node.k-sim rect { stroke: var(--k-sim); }
+.node.k-deploy rect { stroke: var(--k-deploy); } .node.k-real rect { stroke: var(--k-real); stroke-dasharray: 4 3; }
+.node.k-agents rect { stroke: var(--muted); }
+.node .nicon { fill: none; stroke: currentColor; stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; }
+.node.k-train .nicon { color: var(--k-train); } .node.k-sim .nicon { color: var(--k-sim); }
+.node.k-deploy .nicon { color: var(--k-deploy); } .node.k-real .nicon, .node.k-agents .nicon { color: var(--k-real); }
+.hwicon { fill: none; stroke: currentColor; stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; }
+.ntitle { font-size: 13px; font-weight: 600; fill: var(--ink); }
+.nsub { font-size: 11px; fill: var(--muted); }
+.evdot { fill: var(--evidence); }
+.node:hover rect, .node.sel rect { stroke-width: 2.4; }
+.node.sel rect { fill: var(--bg); }
+
+.edge { fill: none; stroke-width: 1.6; opacity: .8; transition: opacity .15s, stroke-width .15s; }
+.edge.f-robot { stroke: var(--f-robot); } .edge.f-data { stroke: var(--f-data); } .edge.f-av { stroke: var(--f-av); }
+.edge.f-ops { stroke: var(--f-ops); } .edge.f-loop { stroke: var(--f-loop); stroke-dasharray: 6 4; }
+.ah-robot { fill: var(--f-robot); } .ah-data { fill: var(--f-data); } .ah-av { fill: var(--f-av); } .ah-ops { fill: var(--f-ops); } .ah-loop { fill: var(--f-loop); }
+.elabel rect { fill: var(--sheet); stroke-width: 1; }
+.elabel text { font-size: 11px; fill: var(--ink); }
+.elabel.f-robot rect { stroke: var(--f-robot); } .elabel.f-data rect { stroke: var(--f-data); } .elabel.f-av rect { stroke: var(--f-av); }
+.elabel.f-ops rect { stroke: var(--f-ops); } .elabel.f-loop rect { stroke: var(--f-loop); }
+.elabel { transition: opacity .15s; }
+
+svg.focus .edge { opacity: .12; } svg.focus .elabel { opacity: .15; } svg.focus .node { opacity: .35; }
+svg.focus .edge.hot { opacity: 1; stroke-width: 2.6; } svg.focus .elabel.hot { opacity: 1; } svg.focus .node.hot { opacity: 1; }
+
+.panel { display: grid; grid-template-columns: minmax(0, 1.15fr) minmax(0, 1fr); gap: 18px; background: var(--sheet); border: 1px solid var(--rule); border-radius: 10px; padding: 16px 18px; }
+@media (max-width: 860px) { .panel { grid-template-columns: minmax(0, 1fr); } }
+.panel h2 { margin: 0 0 2px; font-size: 1.45rem; line-height: 1.15; }
+.panel .where { margin: 0 0 10px; font-size: 13px; color: var(--muted); }
+.panel .where b { color: var(--ink); font-weight: 600; }
+.panel p.desc { margin: 0 0 12px; max-width: 68ch; }
+.panel h3 { margin: 10px 0 6px; font-size: 12px; letter-spacing: .08em; text-transform: uppercase; color: var(--muted); }
+.links { list-style: none; padding: 0; margin: 0; display: grid; gap: 4px; font-size: 14px; }
+.links li { display: grid; grid-template-columns: 14px minmax(0, 1fr); gap: 8px; align-items: baseline; }
+.links li i { width: 14px; height: 3px; border-radius: 2px; background: var(--c); transform: translateY(-3px); }
+.links button { font: inherit; background: none; border: 0; padding: 0; color: var(--ink); text-decoration: underline; text-underline-offset: 2px; cursor: pointer; }
+.links .lab { color: var(--muted); }
+.atlas { font-size: 13px; color: var(--muted); margin-top: 10px; }
+.atlas code { font-family: ui-monospace, SFMono-Regular, Menlo, monospace; font-size: 12.5px; background: var(--bg); padding: 1px 5px; border-radius: 4px; color: var(--ink); }
+figure.ev { margin: 0; min-width: 0; }
+figure.ev img { display: block; width: 100%; height: auto; border-radius: 6px; border: 1px solid var(--rule); background: var(--bg); }
+figure.ev figcaption { font-size: 12.5px; color: var(--muted); margin-top: 6px; }
+.noev { border: 1px dashed var(--rule); border-radius: 6px; padding: 18px; color: var(--muted); font-size: 14px; }
+
+.legend { display: flex; flex-wrap: wrap; gap: 8px 22px; font-size: 13px; color: var(--muted); }
+.legend span { display: inline-flex; align-items: center; gap: 7px; }
+.legend .sw { width: 22px; height: 12px; border-radius: 3px; display: inline-block; border: 1px solid var(--rule); }
+.legend .dot { width: 8px; height: 8px; border-radius: 50%; background: var(--evidence); display: inline-block; }
+footer { font-size: 12.5px; color: var(--muted); }
+@media (prefers-reduced-motion: reduce) { * { transition: none !important; } }
+</style>
+
+<div class="page">
+  <header>
+    <h1>Physical AI System Map</h1>
+    <p>Where every NVIDIA Physical AI framework sits. <b>Rows</b> are stack layers, from the OpenUSD data model up to world models and agents. <b>Columns</b> are where the work runs: the real world, the train computer, the simulate computer, and the deploy computer. <b>Arrows</b> are labeled data flows, colored by pipeline. Click any component to see what it does, what it connects to, and the NVIDIA slide it comes from.</p>
+  </header>
+
+  <div class="controls" role="group" aria-label="Highlight a pipeline">
+    <span class="lbl">Highlight</span>
+    <button class="chip" type="button" id="flow-all" data-flow="" aria-pressed="true">All flows</button>
+    <button class="chip" type="button" id="flow-robot" data-flow="robot" style="--c: var(--f-robot)" aria-pressed="false"><i></i>Robot learning</button>
+    <button class="chip" type="button" id="flow-data" data-flow="data" style="--c: var(--f-data)" aria-pressed="false"><i></i>Perception &amp; synthetic data</button>
+    <button class="chip" type="button" id="flow-av" data-flow="av" style="--c: var(--f-av)" aria-pressed="false"><i></i>Autonomous vehicles</button>
+    <button class="chip" type="button" id="flow-ops" data-flow="ops" style="--c: var(--f-ops)" aria-pressed="false"><i></i>Industrial &amp; operations</button>
+  </div>
+
+  <div class="diagram">
+<!--SVG-->
+  </div>
+
+  <div class="legend" aria-label="Legend">
+    <span><i class="sw" style="background: var(--band-train)"></i>Train computer</span>
+    <span><i class="sw" style="background: var(--band-sim)"></i>Simulate computer</span>
+    <span><i class="sw" style="background: var(--band-deploy)"></i>Deploy computer</span>
+    <span><i class="sw" style="background: var(--band-real)"></i>Real world (dashed outline)</span>
+    <span><i class="dot"></i>Has a source slide</span>
+    <span>Dashed arrow: feedback loop</span>
+  </div>
+
+  <section class="panel" id="panel" aria-live="polite">
+    <div>
+      <h2 id="p-title">Isaac Sim</h2>
+      <p class="where" id="p-where"></p>
+      <p class="desc" id="p-desc"></p>
+      <h3>Connections</h3>
+      <ul class="links" id="p-links"></ul>
+      <p class="atlas" id="p-atlas"></p>
+    </div>
+    <div id="p-ev"></div>
+  </section>
+
+  <footer>Built from NVIDIA GTC 2025 and SIGGRAPH 2026 Physical AI talks, slides, the Newton and Cosmos repositories, and community Isaac Sim tutorials. Numbers marked "as reported" were spoken in talks. Slides remain the work of their presenters; Newton's own slide deck is confidential and not shown. Icons: Lucide (ISC). Font: IBM Plex Sans Condensed (OFL). Pankaj Somkuwar.</footer>
+</div>
+
+<script>
+(function () {
+  var DATA = /*DATA*/;
+  var svg = document.getElementById("map");
+  var COLNAME = { real: "Real world", train: "Train computer", c1: "Simulate computer", c2: "Simulate computer", c3: "Simulate computer", c4: "Simulate computer", d1: "Deploy computer", d2: "Deploy computer", all: "Spans every computer" };
+  var FLOWVAR = { robot: "--f-robot", data: "--f-data", av: "--f-av", ops: "--f-ops", loop: "--f-loop" };
+  var flow = "";
+  var sel = "isaacsim";
+
+  function $(s) { return svg.querySelectorAll(s); }
+  function clearHot() {
+    $(".hot").forEach(function (el) { el.classList.remove("hot"); });
+    $(".node.sel").forEach(function (el) { el.classList.remove("sel"); });
+  }
+  function hotEdge(k) {
+    svg.querySelectorAll('[data-e="' + k + '"]').forEach(function (el) { el.classList.add("hot"); });
+  }
+  function hotNode(id) {
+    var n = svg.querySelector('.node[data-n="' + id + '"]');
+    if (n) n.classList.add("hot");
+  }
+  function applyFlow() {
+    clearHot();
+    if (!flow) { svg.classList.remove("focus"); return; }
+    svg.classList.add("focus");
+    DATA.edges.forEach(function (e, k) {
+      if (e.flow === flow) { hotEdge(k); hotNode(e.src); hotNode(e.dst); }
+    });
+  }
+  function select(id) {
+    sel = id;
+    var n = DATA.nodes[id];
+    if (!n) return;
+    clearHot();
+    svg.classList.add("focus");
+    var g = svg.querySelector('.node[data-n="' + id + '"]');
+    if (g) { g.classList.add("sel"); g.classList.add("hot"); }
+    var items = [];
+    DATA.edges.forEach(function (e, k) {
+      if (e.src === id || e.dst === id) {
+        hotEdge(k); hotNode(e.src); hotNode(e.dst);
+        var other = e.src === id ? e.dst : e.src;
+        var dir = e.src === id ? "to" : "from";
+        items.push({ other: other, dir: dir, label: e.label, flow: e.flow });
+      }
+    });
+    document.getElementById("p-title").textContent = n.title;
+    document.getElementById("p-where").innerHTML = "<b>" + (DATA.layers[n.row] || "") + "</b> layer · " + (COLNAME[n.col] || "") + " · " + n.sub;
+    document.getElementById("p-desc").textContent = n.desc;
+    var ul = document.getElementById("p-links");
+    ul.innerHTML = "";
+    items.forEach(function (it) {
+      var li = document.createElement("li");
+      li.style.setProperty("--c", "var(" + FLOWVAR[it.flow] + ")");
+      var b = document.createElement("button");
+      b.type = "button";
+      b.textContent = DATA.nodes[it.other] ? DATA.nodes[it.other].title : it.other;
+      b.addEventListener("click", function () { select(it.other); });
+      var lab = document.createElement("span");
+      lab.className = "lab";
+      lab.textContent = " " + it.dir + " · " + (it.label || "link") + " · " + DATA.flows[it.flow];
+      var wrap = document.createElement("span");
+      wrap.appendChild(document.createTextNode(it.dir === "to" ? "→ " : "← "));
+      wrap.appendChild(b); wrap.appendChild(lab);
+      li.appendChild(document.createElement("i")); li.appendChild(wrap);
+      ul.appendChild(li);
+    });
+    if (!items.length) ul.innerHTML = "<li><i></i><span class=\"lab\">No direct flows drawn; see the description.</span></li>";
+    document.getElementById("p-atlas").innerHTML = n.atlas ? "Rebuilt in code: <code>workflows/" + n.atlas + "/</code>" : "";
+    var ev = document.getElementById("p-ev");
+    ev.innerHTML = "";
+    if (n.evidence) {
+      var fig = document.createElement("figure"); fig.className = "ev";
+      var img = document.createElement("img");
+      img.alt = "NVIDIA slide or screen used as the source for " + n.title;
+      img.loading = "lazy";
+      img.src = "screens/" + n.evidence;
+      img.onerror = function () { if (img.src.indexOf("assets/screens") < 0) img.src = "../assets/screens/" + n.evidence; };
+      var cap = document.createElement("figcaption");
+      cap.textContent = "Source slide or screen for " + n.title + ". Presenter's material, shown for commentary.";
+      fig.appendChild(img); fig.appendChild(cap); ev.appendChild(fig);
+    } else {
+      var d = document.createElement("div"); d.className = "noev";
+      d.textContent = n.evidence_note || "No public slide in the collection for this component; the description draws on talk transcripts and repository code.";
+      ev.appendChild(d);
+    }
+  }
+  svg.querySelectorAll(".node").forEach(function (g) {
+    g.addEventListener("click", function () { setFlow(""); select(g.getAttribute("data-n")); });
+    g.addEventListener("keydown", function (ev) { if (ev.key === "Enter" || ev.key === " ") { ev.preventDefault(); setFlow(""); select(g.getAttribute("data-n")); } });
+  });
+  function setFlow(f) {
+    flow = f;
+    document.querySelectorAll(".chip").forEach(function (c) { c.setAttribute("aria-pressed", String(c.getAttribute("data-flow") === f)); });
+  }
+  document.querySelectorAll(".chip").forEach(function (c) {
+    c.addEventListener("click", function () { setFlow(c.getAttribute("data-flow")); applyFlow(); });
+  });
+  select(sel);
+  svg.classList.remove("focus");
+  clearHot();
+  var g0 = svg.querySelector('.node[data-n="' + sel + '"]'); if (g0) g0.classList.add("sel");
+})();
+</script>

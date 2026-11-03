@@ -1,0 +1,321 @@
+{
+  "n_decisions": 12,
+  "overall": {
+    "n": 12,
+    "tp": 2,
+    "fp": 1,
+    "fn": 1,
+    "tn": 6,
+    "abstained": 2,
+    "precision": 0.6666666666666666,
+    "recall": 0.6666666666666666,
+    "coverage": 0.8333333333333334,
+    "agreement": 0.6666666666666666,
+    "confusion_rows_truth_cols_pred": {
+      "rows": [
+        "present",
+        "absent"
+      ],
+      "cols": [
+        "present",
+        "absent",
+        "abstain"
+      ],
+      "matrix": [
+        [
+          2,
+          1,
+          1
+        ],
+        [
+          1,
+          6,
+          1
+        ]
+      ]
+    }
+  },
+  "by_hazard": {
+    "fallen_load": {
+      "n": 4,
+      "tp": 0,
+      "fp": 0,
+      "fn": 0,
+      "tn": 3,
+      "abstained": 1,
+      "precision": NaN,
+      "recall": NaN,
+      "coverage": 0.75,
+      "agreement": 0.75,
+      "confusion_rows_truth_cols_pred": {
+        "rows": [
+          "present",
+          "absent"
+        ],
+        "cols": [
+          "present",
+          "absent",
+          "abstain"
+        ],
+        "matrix": [
+          [
+            0,
+            0,
+            1
+          ],
+          [
+            0,
+            3,
+            0
+          ]
+        ]
+      }
+    },
+    "near_miss": {
+      "n": 4,
+      "tp": 1,
+      "fp": 1,
+      "fn": 1,
+      "tn": 1,
+      "abstained": 0,
+      "precision": 0.5,
+      "recall": 0.5,
+      "coverage": 1.0,
+      "agreement": 0.5,
+      "confusion_rows_truth_cols_pred": {
+        "rows": [
+          "present",
+          "absent"
+        ],
+        "cols": [
+          "present",
+          "absent",
+          "abstain"
+        ],
+        "matrix": [
+          [
+            1,
+            1,
+            0
+          ],
+          [
+            1,
+            1,
+            0
+          ]
+        ]
+      }
+    },
+    "zone_violation": {
+      "n": 4,
+      "tp": 1,
+      "fp": 0,
+      "fn": 0,
+      "tn": 2,
+      "abstained": 1,
+      "precision": 1.0,
+      "recall": 1.0,
+      "coverage": 0.75,
+      "agreement": 0.75,
+      "confusion_rows_truth_cols_pred": {
+        "rows": [
+          "present",
+          "absent"
+        ],
+        "cols": [
+          "present",
+          "absent",
+          "abstain"
+        ],
+        "matrix": [
+          [
+            1,
+            0,
+            0
+          ],
+          [
+            0,
+            2,
+            1
+          ]
+        ]
+      }
+    }
+  },
+  "by_condition": {
+    "camera=ceiling": {
+      "n": 6,
+      "tp": 2,
+      "fp": 1,
+      "fn": 0,
+      "tn": 3,
+      "abstained": 0,
+      "precision": 0.6666666666666666,
+      "recall": 1.0,
+      "coverage": 1.0,
+      "agreement": 0.8333333333333334,
+      "confusion_rows_truth_cols_pred": {
+        "rows": [
+          "present",
+          "absent"
+        ],
+        "cols": [
+          "present",
+          "absent",
+          "abstain"
+        ],
+        "matrix": [
+          [
+            2,
+            0,
+            0
+          ],
+          [
+            1,
+            3,
+            0
+          ]
+        ]
+      }
+    },
+    "camera=forklift": {
+      "n": 6,
+      "tp": 0,
+      "fp": 0,
+      "fn": 1,
+      "tn": 3,
+      "abstained": 2,
+      "precision": NaN,
+      "recall": 0.0,
+      "coverage": 0.6666666666666666,
+      "agreement": 0.5,
+      "confusion_rows_truth_cols_pred": {
+        "rows": [
+          "present",
+          "absent"
+        ],
+        "cols": [
+          "present",
+          "absent",
+          "abstain"
+        ],
+        "matrix": [
+          [
+            0,
+            1,
+            1
+          ],
+          [
+            0,
+            3,
+            1
+          ]
+        ]
+      }
+    },
+    "lighting=day": {
+      "n": 6,
+      "tp": 1,
+      "fp": 0,
+      "fn": 0,
+      "tn": 4,
+      "abstained": 1,
+      "precision": 1.0,
+      "recall": 1.0,
+      "coverage": 0.8333333333333334,
+      "agreement": 0.8333333333333334,
+      "confusion_rows_truth_cols_pred": {
+        "rows": [
+          "present",
+          "absent"
+        ],
+        "cols": [
+          "present",
+          "absent",
+          "abstain"
+        ],
+        "matrix": [
+          [
+            1,
+            0,
+            0
+          ],
+          [
+            0,
+            4,
+            1
+          ]
+        ]
+      }
+    },
+    "lighting=night": {
+      "n": 6,
+      "tp": 1,
+      "fp": 1,
+      "fn": 1,
+      "tn": 2,
+      "abstained": 1,
+      "precision": 0.5,
+      "recall": 0.5,
+      "coverage": 0.8333333333333334,
+      "agreement": 0.5,
+      "confusion_rows_truth_cols_pred": {
+        "rows": [
+          "present",
+          "absent"
+        ],
+        "cols": [
+          "present",
+          "absent",
+          "abstain"
+        ],
+        "matrix": [
+          [
+            1,
+            1,
+            1
+          ],
+          [
+            1,
+            2,
+            0
+          ]
+        ]
+      }
+    }
+  },
+  "localization_on_true_positives": [
+    {
+      "clip_id": "wh_01",
+      "type": "near_miss",
+      "temporal_iou": 0.793,
+      "best_box_iou": 0.792
+    },
+    {
+      "clip_id": "wh_02",
+      "type": "zone_violation",
+      "temporal_iou": 0.811,
+      "best_box_iou": 0.708
+    }
+  ],
+  "failure_modes": {
+    "false_positives": [
+      "wh_02/near_miss"
+    ],
+    "false_negatives": [
+      "wh_04/near_miss"
+    ],
+    "abstentions": [
+      "wh_03/zone_violation",
+      "wh_04/fallen_load"
+    ],
+    "malformed_replies": [
+      "wh_03/hazard/zone_violation"
+    ],
+    "missing_replies": [],
+    "incident_flags": [
+      "wh_02/near_miss: timestamp_unparsed_used_full_clip",
+      "wh_02/near_miss: invalid_box:outside 0-1000"
+    ]
+  }
+}

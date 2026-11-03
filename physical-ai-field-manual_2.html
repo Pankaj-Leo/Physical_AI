@@ -1,0 +1,1029 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Physical AI Field Manual</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans+Condensed:wght@500;600;700&family=Source+Serif+4:ital,opsz,wght@0,8..60,400;0,8..60,600;1,8..60,400&family=JetBrains+Mono:wght@400;600&display=swap">
+<style>
+/* Layout: an engineering field manual. Sticky chapter index on the left, one serif reading column on the right.
+   Layer colors carry meaning everywhere: blue = physics & simulation, violet = data & learning,
+   orange = world models & reconstruction, teal = deployment & operations. */
+:root {
+  --paper: #f4f6f8;
+  --sheet: #ffffff;
+  --ink: #161a21;
+  --muted: #586271;
+  --rule: #d8dde4;
+  --code-bg: #eef1f5;
+  --physics: #2b67a8;
+  --data: #6a52b5;
+  --world: #b8582a;
+  --deploy: #18806f;
+  --caution: #8a5a00;
+  --caution-bg: #fbf3e2;
+  --physics-bg: #e8f0f9;
+  --data-bg: #efecf9;
+  --world-bg: #f9ece4;
+  --deploy-bg: #e3f3f0;
+  --plot-bg: #ffffff;
+  --font-display: "IBM Plex Sans Condensed", "Arial Narrow", "Helvetica Neue", Arial, sans-serif;
+  --font-body: "Source Serif 4", Georgia, "Times New Roman", serif;
+  --font-mono: "JetBrains Mono", ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+  --measure: 70ch;
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --paper: #0f1317; --sheet: #161b21; --ink: #e5e8ed; --muted: #9aa4b2; --rule: #2a313a; --code-bg: #1b2129;
+    --physics: #7fb0e8; --data: #ab9bf0; --world: #f0a072; --deploy: #5cc9b5; --caution: #f0c46b; --caution-bg: #2b2414;
+    --physics-bg: #16222f; --data-bg: #1f1b2e; --world-bg: #2b1d16; --deploy-bg: #13261f; --plot-bg: #ffffff;
+    color-scheme: dark;
+  }
+}
+:root[data-theme="dark"] {
+  --paper: #0f1317; --sheet: #161b21; --ink: #e5e8ed; --muted: #9aa4b2; --rule: #2a313a; --code-bg: #1b2129;
+  --physics: #7fb0e8; --data: #ab9bf0; --world: #f0a072; --deploy: #5cc9b5; --caution: #f0c46b; --caution-bg: #2b2414;
+  --physics-bg: #16222f; --data-bg: #1f1b2e; --world-bg: #2b1d16; --deploy-bg: #13261f; --plot-bg: #ffffff;
+  color-scheme: dark;
+}
+* { box-sizing: border-box; }
+body { background: var(--paper); color: var(--ink); font-family: var(--font-body); font-size: 17px; line-height: 1.62; }
+.wrap { max-width: 1240px; margin: 0 auto; padding-inline: 20px; padding-block: 0 64px; display: grid; grid-template-columns: 250px minmax(0, 1fr); gap: 48px; }
+@media (max-width: 960px) { .wrap { grid-template-columns: minmax(0, 1fr); gap: 0; } }
+
+/* Index */
+nav.toc { position: sticky; top: calc(env(safe-area-inset-top, 0px) + 16px); align-self: start; max-height: calc(100vh - 32px); overflow-y: auto; padding-block: 28px; font-family: var(--font-display); font-size: 14.5px; }
+nav.toc .toc-title { font-weight: 700; letter-spacing: .08em; text-transform: uppercase; font-size: 12px; color: var(--muted); margin: 0 0 10px; }
+nav.toc ol { list-style: none; margin: 0; padding: 0; display: grid; gap: 1px; }
+nav.toc .part { margin-top: 14px; font-size: 11.5px; letter-spacing: .08em; text-transform: uppercase; color: var(--muted); font-weight: 600; }
+nav.toc a { display: grid; grid-template-columns: 2.1em 1fr; color: var(--ink); text-decoration: none; padding: 3px 8px; border-radius: 4px; border-left: 2px solid transparent; }
+nav.toc a span { color: var(--muted); font-variant-numeric: tabular-nums; }
+nav.toc a:hover, nav.toc a:focus-visible { background: var(--code-bg); outline: none; }
+nav.toc a.active { border-left-color: var(--physics); background: var(--code-bg); }
+details.toc-mobile { display: none; }
+@media (max-width: 960px) {
+  nav.toc { display: none; }
+  details.toc-mobile { display: block; margin-block: 16px 0; border: 1px solid var(--rule); border-radius: 6px; background: var(--sheet); padding: 10px 14px; font-family: var(--font-display); }
+  details.toc-mobile summary { cursor: pointer; font-weight: 600; }
+  details.toc-mobile ol { columns: 2; column-gap: 20px; padding-left: 1.4em; font-size: 14px; }
+  details.toc-mobile a { color: var(--ink); }
+}
+@media (max-width: 520px) { details.toc-mobile ol { columns: 1; } }
+
+/* Reading column */
+main { min-width: 0; }
+.col { max-width: var(--measure); }
+header.hero { padding-block: 44px 28px; border-bottom: 1px solid var(--rule); }
+.eyebrow { font-family: var(--font-display); text-transform: uppercase; letter-spacing: .1em; font-size: 12.5px; font-weight: 600; color: var(--muted); margin: 0; }
+h1 { font-family: var(--font-display); font-weight: 700; font-size: clamp(2.4rem, 5.4vw, 3.6rem); line-height: 1.02; letter-spacing: -.01em; margin: 10px 0 14px; text-wrap: balance; }
+.lede { font-size: 1.2rem; line-height: 1.5; max-width: 62ch; margin: 0; }
+.facts { display: flex; flex-wrap: wrap; gap: 10px 28px; margin-top: 22px; font-family: var(--font-display); font-size: 14px; color: var(--muted); }
+.facts b { color: var(--ink); font-size: 18px; font-variant-numeric: tabular-nums; margin-right: 4px; }
+section.chapter { padding-block: 40px 8px; border-bottom: 1px solid var(--rule); scroll-margin-top: 16px; }
+.part-label { font-family: var(--font-display); font-size: 12.5px; letter-spacing: .1em; text-transform: uppercase; font-weight: 600; margin: 0; }
+h2 { font-family: var(--font-display); font-weight: 700; font-size: 2rem; line-height: 1.1; margin: 4px 0 14px; text-wrap: balance; }
+h2 .n { color: var(--muted); font-weight: 500; margin-right: .3em; font-variant-numeric: tabular-nums; }
+h3 { font-family: var(--font-display); font-weight: 600; font-size: 1.25rem; margin: 30px 0 8px; text-wrap: balance; }
+h4 { font-family: var(--font-display); font-weight: 600; font-size: 1.02rem; margin: 20px 0 6px; letter-spacing: .01em; }
+p { margin: 0 0 14px; overflow-wrap: break-word; }
+ul, ol { padding-left: 1.3em; margin: 0 0 14px; }
+li { margin-bottom: 5px; }
+a { color: var(--physics); text-underline-offset: 2px; }
+strong { font-weight: 600; }
+.layer-physics .part-label { color: var(--physics); }
+.layer-data .part-label { color: var(--data); }
+.layer-world .part-label { color: var(--world); }
+.layer-deploy .part-label { color: var(--deploy); }
+.layer-core .part-label { color: var(--muted); }
+
+/* Source chips */
+.src { display: inline-block; font-family: var(--font-mono); font-size: 11.5px; line-height: 1.5; padding: 0 5px; border-radius: 3px; border: 1px solid var(--rule); color: var(--muted); vertical-align: 1px; white-space: nowrap; }
+.src.talk { border-style: dashed; }
+
+/* Tables */
+.table-scroll { overflow-x: auto; margin: 6px 0 18px; border: 1px solid var(--rule); border-radius: 6px; background: var(--sheet); }
+table { border-collapse: collapse; width: 100%; font-size: 15px; line-height: 1.45; }
+th, td { text-align: left; padding: 8px 12px; border-bottom: 1px solid var(--rule); vertical-align: top; }
+th { font-family: var(--font-display); font-weight: 600; font-size: 13.5px; letter-spacing: .02em; background: var(--code-bg); }
+tr:last-child td { border-bottom: 0; }
+td.num, th.num { text-align: right; font-variant-numeric: tabular-nums; white-space: nowrap; }
+
+/* Code */
+pre { position: relative; margin: 8px 0 18px; padding: 14px 16px; background: var(--code-bg); border: 1px solid var(--rule); border-radius: 6px; overflow-x: auto; font-family: var(--font-mono); font-size: 13.5px; line-height: 1.55; }
+code { font-family: var(--font-mono); font-size: .86em; background: var(--code-bg); padding: 1px 4px; border-radius: 3px; overflow-wrap: anywhere; }
+pre code { overflow-wrap: normal; }
+pre code { background: none; padding: 0; font-size: inherit; }
+.copy { position: absolute; top: 8px; right: 8px; font-family: var(--font-display); font-size: 12px; padding: 2px 8px; border: 1px solid var(--rule); background: var(--sheet); color: var(--muted); border-radius: 4px; cursor: pointer; }
+.copy:hover, .copy:focus-visible { color: var(--ink); outline: 2px solid var(--physics); outline-offset: 1px; }
+.code-label { font-family: var(--font-display); font-size: 12.5px; color: var(--muted); margin: 14px 0 -4px; }
+
+/* Callouts */
+.note { margin: 16px 0 20px; padding: 12px 16px; border-radius: 6px; border: 1px solid var(--rule); background: var(--sheet); }
+.note > :last-child { margin-bottom: 0; }
+.note .tag { font-family: var(--font-display); font-weight: 700; font-size: 12px; letter-spacing: .08em; text-transform: uppercase; display: block; margin-bottom: 4px; }
+.note.gotcha { background: var(--caution-bg); border-color: transparent; }
+.note.gotcha .tag { color: var(--caution); }
+.note.measured { background: var(--deploy-bg); border-color: transparent; }
+.note.measured .tag { color: var(--deploy); }
+.note.key { background: var(--physics-bg); border-color: transparent; }
+.note.key .tag { color: var(--physics); }
+blockquote { margin: 16px 0; padding: 2px 0 2px 16px; border-left: 3px solid var(--rule); font-style: italic; color: var(--ink); }
+blockquote cite { display: block; font-style: normal; font-size: 14px; color: var(--muted); margin-top: 2px; }
+
+/* Figures */
+figure { margin: 18px 0 22px; }
+figure .frame { overflow-x: auto; border: 1px solid var(--rule); border-radius: 6px; background: var(--sheet); padding: 12px; }
+figure .frame.plot { background: var(--plot-bg); }
+figure img { display: block; max-width: 100%; height: auto; margin: 0 auto; }
+figcaption { font-family: var(--font-display); font-size: 13.5px; color: var(--muted); margin-top: 6px; line-height: 1.45; }
+svg text { font-family: var(--font-display); }
+.svg-ink { fill: var(--ink); }
+.svg-muted { fill: var(--muted); }
+.svg-rule { stroke: var(--rule); }
+.svg-line { stroke: var(--muted); fill: none; }
+.f-physics { fill: var(--physics-bg); stroke: var(--physics); }
+.f-data { fill: var(--data-bg); stroke: var(--data); }
+.f-world { fill: var(--world-bg); stroke: var(--world); }
+.f-deploy { fill: var(--deploy-bg); stroke: var(--deploy); }
+.f-sheet { fill: var(--sheet); stroke: var(--rule); }
+.t-physics { fill: var(--physics); } .t-data { fill: var(--data); } .t-world { fill: var(--world); } .t-deploy { fill: var(--deploy); }
+
+/* Step list (real sequences only) */
+ol.steps { counter-reset: s; list-style: none; padding-left: 0; display: grid; gap: 8px; }
+ol.steps > li { counter-increment: s; display: grid; grid-template-columns: 2.2em minmax(0, 1fr); gap: 4px; margin: 0; }
+ol.steps > li::before { content: counter(s); font-family: var(--font-display); font-weight: 700; color: var(--muted); font-variant-numeric: tabular-nums; }
+
+.two { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 14px; margin: 10px 0 18px; }
+@media (max-width: 640px) { .two { grid-template-columns: minmax(0, 1fr); } }
+.two > div { border: 1px solid var(--rule); border-radius: 6px; padding: 10px 14px; background: var(--sheet); min-width: 0; }
+.two > div h4 { margin-top: 2px; }
+.two > div > :last-child { margin-bottom: 0; }
+
+dl.glossary { display: grid; grid-template-columns: minmax(9em, max-content) minmax(0, 1fr); gap: 6px 18px; margin: 10px 0 18px; }
+dl.glossary dt { font-family: var(--font-display); font-weight: 600; }
+dl.glossary dd { margin: 0; }
+@media (max-width: 560px) { dl.glossary { grid-template-columns: minmax(0, 1fr); } dl.glossary dd { margin-bottom: 8px; } }
+
+footer.sig { padding-block: 36px 8px; font-family: var(--font-display); font-size: 14.5px; color: var(--muted); }
+footer.sig b { color: var(--ink); font-size: 16px; }
+footer.sig .contact { display: flex; flex-wrap: wrap; gap: 6px 20px; margin-top: 8px; }
+:focus-visible { outline: 2px solid var(--physics); outline-offset: 2px; }
+@media (prefers-reduced-motion: reduce) { * { scroll-behavior: auto !important; } }
+html { scroll-behavior: smooth; }
+</style>
+</head>
+<body>
+
+<div class="wrap">
+<nav class="toc" aria-label="Chapters">
+  <p class="toc-title">Field manual</p>
+  <ol id="toc-list">
+    <li class="part">I · Foundations</li>
+    <li><a href="#what"><span>1</span>What Physical AI is</a></li>
+    <li><a href="#stack"><span>2</span>The stack</a></li>
+    <li><a href="#flywheel"><span>3</span>Simulation and the flywheel</a></li>
+    <li class="part">II · Worlds and physics</li>
+    <li><a href="#openusd"><span>4</span>OpenUSD and SimReady</a></li>
+    <li><a href="#omniverse"><span>5</span>Omniverse</a></li>
+    <li><a href="#newton"><span>6</span>Physics engines and Newton</a></li>
+    <li><a href="#isaacsim"><span>7</span>Isaac Sim and ROS 2</a></li>
+    <li><a href="#isaaclab"><span>8</span>Isaac Lab and robot learning</a></li>
+    <li class="part">III · Data from pixels</li>
+    <li><a href="#sdg"><span>9</span>Synthetic data</a></li>
+    <li><a href="#nurec"><span>10</span>Neural reconstruction</a></li>
+    <li><a href="#cosmos"><span>11</span>World models: Cosmos</a></li>
+    <li class="part">IV · Applications</li>
+    <li><a href="#gr00t"><span>12</span>Robot brains and humanoids</a></li>
+    <li><a href="#av"><span>13</span>Autonomous vehicles</a></li>
+    <li><a href="#spaces"><span>14</span>Smart spaces and agents</a></li>
+    <li><a href="#twins"><span>15</span>Industrial twins</a></li>
+    <li><a href="#edge"><span>16</span>The edge computer</a></li>
+    <li class="part">V · Practice</li>
+    <li><a href="#eval"><span>17</span>Evaluation and safety</a></li>
+    <li><a href="#agents"><span>18</span>Agents and skills</a></li>
+    <li><a href="#lab"><span>19</span>Hands-on on a CPU</a></li>
+    <li><a href="#path"><span>20</span>An eight-week path</a></li>
+    <li><a href="#decide"><span>21</span>Decision guide</a></li>
+    <li><a href="#glossary"><span>22</span>Glossary</a></li>
+    <li><a href="#sources"><span>23</span>Sources</a></li>
+  </ol>
+</nav>
+
+<main>
+<header class="hero">
+  <div class="col">
+    <p class="eyebrow">A technical field manual · October 2026</p>
+    <h1>Physical AI Field Manual</h1>
+    <p class="lede">How robots, vehicles and factories learn when most of the data is computed, and a smaller set of real demonstrations still seeds the loop. This manual walks the whole stack: OpenUSD scenes, Omniverse, the Newton physics engine, Isaac Sim and Isaac Lab, neural reconstruction, Cosmos world models, robot foundation models, and the evaluation discipline that holds it together.</p>
+    <div class="facts" aria-label="What this manual is built on">
+      <span><b>63</b>talk and tutorial transcripts</span>
+      <span><b>71</b>screenshots</span>
+      <span><b>2</b>code snapshots read</span>
+      <span><b>11</b>workflows rebuilt in code</span>
+    </div>
+  </div>
+  <details class="toc-mobile">
+    <summary>Chapters</summary>
+    <ol>
+      <li><a href="#what">What Physical AI is</a></li><li><a href="#stack">The stack</a></li><li><a href="#flywheel">Simulation and the flywheel</a></li>
+      <li><a href="#openusd">OpenUSD and SimReady</a></li><li><a href="#omniverse">Omniverse</a></li><li><a href="#newton">Physics engines and Newton</a></li>
+      <li><a href="#isaacsim">Isaac Sim and ROS 2</a></li><li><a href="#isaaclab">Isaac Lab and robot learning</a></li><li><a href="#sdg">Synthetic data</a></li>
+      <li><a href="#nurec">Neural reconstruction</a></li><li><a href="#cosmos">World models: Cosmos</a></li><li><a href="#gr00t">Robot brains and humanoids</a></li>
+      <li><a href="#av">Autonomous vehicles</a></li><li><a href="#spaces">Smart spaces and agents</a></li><li><a href="#twins">Industrial twins</a></li>
+      <li><a href="#edge">The edge computer</a></li><li><a href="#eval">Evaluation and safety</a></li><li><a href="#agents">Agents and skills</a></li>
+      <li><a href="#lab">Hands-on on a CPU</a></li><li><a href="#path">An eight-week path</a></li><li><a href="#decide">Decision guide</a></li>
+      <li><a href="#glossary">Glossary</a></li><li><a href="#sources">Sources</a></li>
+    </ol>
+  </details>
+  <div class="col">
+    <div class="note key">
+      <span class="tag">How to read the numbers</span>
+      <p>Every number carries its source. <span class="src">paper</span> and <span class="src">repo</span> are printed sources. <span class="src">slide</span> is a projected slide. <span class="src talk">talk†</span> is a number spoken in an auto-captioned talk: treat it as approximate, as reported by the speaker. <span class="src">measured</span> means it was run on a 4-core CPU in a cloud container while building this manual. Cosmos claims name their generation (1, 2.5 or 3), because the models changed a lot in twenty months.</p>
+    </div>
+  </div>
+</header>
+
+<!-- =============================== PART I =============================== -->
+<section class="chapter layer-core" id="what">
+<div class="col">
+  <p class="part-label">Part I · Foundations</p>
+  <h2><span class="n">1</span>What Physical AI is</h2>
+  <p><strong>Physical AI</strong> is AI that perceives and acts in the physical world: robot arms, humanoids, mobile robots, cars, factories and cities. Language models learn from text the internet already holds. Physical AI has no such corpus. The data it needs (contact forces, friction, motor noise, rare accidents) mostly does not exist yet, and collecting it with real machines is slow, costly and sometimes dangerous.</p>
+  <p>The field's answer is to <strong>compute</strong> the data. Simulators generate trajectories with exact ground truth. Generative world models turn those simulations into photoreal video and invent rare scenarios. A small amount of real data anchors the whole thing. The rest of this manual is about the tools for each step and how they fit.</p>
+
+  <h3>Three computers</h3>
+  <p>Every speaker in the source material uses the same frame. A system needs three computers, and each one constrains the others.</p>
+  <figure>
+    <div class="frame">
+      <svg viewBox="0 0 720 210" width="100%" role="img" aria-label="Three computers: train on DGX, simulate on Omniverse and Cosmos, deploy on Jetson Thor or DRIVE AGX, with a loop back">
+        <rect x="10" y="40" width="200" height="110" rx="8" class="f-data" stroke-width="1.5"/>
+        <text x="110" y="72" text-anchor="middle" class="t-data" font-size="17" font-weight="700">Train</text>
+        <text x="110" y="96" text-anchor="middle" class="svg-ink" font-size="13">DGX · GB200</text>
+        <text x="110" y="118" text-anchor="middle" class="svg-muted" font-size="12">policies, GR00T, Cosmos</text>
+        <rect x="260" y="40" width="200" height="110" rx="8" class="f-physics" stroke-width="1.5"/>
+        <text x="360" y="72" text-anchor="middle" class="t-physics" font-size="17" font-weight="700">Simulate</text>
+        <text x="360" y="96" text-anchor="middle" class="svg-ink" font-size="13">OVX · RTX PRO 6000</text>
+        <text x="360" y="118" text-anchor="middle" class="svg-muted" font-size="12">Omniverse, Isaac, Newton, Cosmos</text>
+        <rect x="510" y="40" width="200" height="110" rx="8" class="f-deploy" stroke-width="1.5"/>
+        <text x="610" y="72" text-anchor="middle" class="t-deploy" font-size="17" font-weight="700">Deploy</text>
+        <text x="610" y="96" text-anchor="middle" class="svg-ink" font-size="13">Jetson Thor · DRIVE AGX</text>
+        <text x="610" y="118" text-anchor="middle" class="svg-muted" font-size="12">the distilled policy runs here</text>
+        <path d="M210 95 H255" class="svg-line" stroke-width="1.6" marker-end="url(#arr)"/>
+        <path d="M460 95 H505" class="svg-line" stroke-width="1.6" marker-end="url(#arr)"/>
+        <path d="M610 150 V182 H110 V155" class="svg-line" stroke-width="1.4" stroke-dasharray="5 4" marker-end="url(#arr)"/>
+        <text x="360" y="200" text-anchor="middle" class="svg-muted" font-size="12">field failures become the next training data</text>
+        <text x="360" y="22" text-anchor="middle" class="svg-muted" font-size="12">"compresses tokens" → "generates tokens" → "deploys tokens"</text>
+        <defs><marker id="arr" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0 0 L10 5 L0 10 z" class="svg-muted"/></marker></defs>
+      </svg>
+    </div>
+    <figcaption>The three-computer frame used in NVIDIA's GTC 2025 talks. The deploy computer limits model size. The released GR00T N1 checkpoint has 2.2 billion parameters, 1.34 billion of them in Eagle-2 (arXiv 2503.14734).</figcaption>
+  </figure>
+
+  <h3>The data pyramid</h3>
+  <div class="table-scroll"><table>
+    <thead><tr><th>Tier</th><th>Example</th><th>Strength</th><th>Limit</th></tr></thead>
+    <tbody>
+      <tr><td><strong>Real robot data</strong> (top)</td><td>Teleoperation with a headset mapping your hands to robot hands</td><td>Highest fidelity, real motor noise</td><td>Scales with robots and people. One operator-hour yields at most one hour of data; resets often leave only minutes of useful data <span class="src talk">talk†</span></td></tr>
+      <tr><td><strong>Simulation</strong> (middle)</td><td>Isaac Lab, Newton, DexMimicGen, Cosmos</td><td>"The only tier that scales with compute" <span class="src talk">talk†</span></td><td>Needs accurate physics and assets; sim-to-real gap</td></tr>
+      <tr><td><strong>Web and human video</strong> (bottom)</td><td>YouTube, egocentric capture, motion capture</td><td>Enormous volume, human-centred</td><td>No actions, no forces; seen through human eyes</td></tr>
+    </tbody>
+  </table></div>
+  <p>The scale gap is the motivation for everything else. In the GR00T N1 paper, Table 7 lists 3,288.8 hours of real-robot data, 2,517.0 hours of human video, 1,742.6 hours of simulation, and 827.3 hours of neural trajectories, for 8,375.7 hours total. The neural set expands 88.4 hours of in-house teleoperation to 827.3 hours. Real demonstrations still seed the loop. Compute is how the field scales everything past that seed.</p>
+</div>
+</section>
+
+<section class="chapter layer-core" id="stack">
+<div class="col">
+  <p class="part-label">Part I · Foundations</p>
+  <h2><span class="n">2</span>The stack, layer by layer</h2>
+  <p>Each layer reads and writes the one below it. Learn them bottom-up: the data model first, because every tool above speaks it.</p>
+  <figure>
+    <div class="frame">
+      <svg viewBox="0 0 720 420" width="100%" role="img" aria-label="Seven-layer Physical AI stack from hardware to agents">
+        <g font-size="13">
+          <rect x="10" y="10" width="700" height="50" rx="6" class="f-sheet"/>
+          <text x="24" y="32" class="svg-ink" font-weight="700" font-size="15">Agents &amp; skills</text>
+          <text x="24" y="50" class="svg-muted">Claude Code / Codex + NVIDIA skills, NuRec agent skills, content and physics agents</text>
+          <rect x="10" y="68" width="700" height="50" rx="6" class="f-world"/>
+          <text x="24" y="90" class="t-world" font-weight="700" font-size="15">Learned worlds</text>
+          <text x="24" y="108" class="svg-ink">Cosmos 3 (Reasoner | Generator) · NuRec Gaussian reconstruction · Cosmos-Dreams</text>
+          <rect x="10" y="126" width="700" height="50" rx="6" class="f-data"/>
+          <text x="24" y="148" class="t-data" font-weight="700" font-size="15">Robotics applications</text>
+          <text x="24" y="166" class="svg-ink">Isaac Sim (ROS 2 bridge, sensors) · Isaac Lab (RL/IL, thousands of envs) · GR00T · Isaac ROS</text>
+          <rect x="10" y="184" width="700" height="50" rx="6" class="f-physics"/>
+          <text x="24" y="206" class="t-physics" font-weight="700" font-size="15">Physics</text>
+          <text x="24" y="224" class="svg-ink">Newton → MuJoCo Warp → Warp → CUDA (robot learning) · PhysX (industrial twins)</text>
+          <rect x="10" y="242" width="700" height="50" rx="6" class="f-physics"/>
+          <text x="24" y="264" class="t-physics" font-weight="700" font-size="15">Platform</text>
+          <text x="24" y="282" class="svg-ink">Omniverse Kit and extensions · Replicator · Nucleus</text>
+          <rect x="10" y="300" width="700" height="50" rx="6" class="f-sheet"/>
+          <text x="24" y="322" class="svg-ink" font-weight="700" font-size="15">Data model</text>
+          <text x="24" y="340" class="svg-muted">OpenUSD · AOUSD schemas (UsdPhysics, deformables) · SimReady content specifications</text>
+          <rect x="10" y="358" width="700" height="50" rx="6" class="f-deploy"/>
+          <text x="24" y="380" class="t-deploy" font-weight="700" font-size="15">Hardware</text>
+          <text x="24" y="398" class="svg-ink">DGX / GB200 (train) · OVX, RTX PRO 6000, DGX Spark (simulate) · Jetson Thor, DRIVE AGX (deploy)</text>
+        </g>
+      </svg>
+    </div>
+    <figcaption>The Physical AI stack as of October 2026, assembled from GTC 2025 and SIGGRAPH 2026 talks and the Newton and Cosmos repositories. Colors follow the manual's key: blue physics and simulation, violet data and learning, orange world models, teal deployment.</figcaption>
+  </figure>
+  <p>Two relationships are easy to get wrong. <strong>Newton does not replace PhysX.</strong> Newton's own FAQ answers "Will Newton replace PhysX? No." <span class="src">repo</span>: PhysX stays the engine for industrial digital twins, Newton targets robot learning. And <strong>Cosmos does not replace simulation.</strong> A research lead put the division of labor this way: "Omniverse provides 3D consistency and Cosmos provides photorealism and imagination" <span class="src talk">talk†</span>.</p>
+</div>
+</section>
+
+<section class="chapter layer-core" id="flywheel">
+<div class="col">
+  <p class="part-label">Part I · Foundations</p>
+  <h2><span class="n">3</span>Three generations of simulation, and the flywheel</h2>
+  <p>The AV community describes simulation in three generations. They are complementary, not successive: each covers a weakness of the others.</p>
+  <div class="table-scroll"><table>
+    <thead><tr><th></th><th>Simulation 1.0</th><th>Simulation 2.0</th><th>Simulation 3.0</th></tr></thead>
+    <tbody>
+      <tr><td><strong>Method</strong></td><td>Graphics: hand-authored assets, ray tracing</td><td>Neural reconstruction: NeRF → 3D Gaussian splats (NuRec)</td><td>Generative world models (Cosmos)</td></tr>
+      <tr><td><strong>Strength</strong></td><td>Deterministic, exact ground truth, LiDAR multipath, radar, hardware-in-the-loop</td><td>Real places from fleet logs; smaller sim-to-real gap</td><td>Weather, lens effects, long-tail scenarios beyond the logs</td></tr>
+      <tr><td><strong>Weakness</strong></td><td>Bottlenecked on asset creation</td><td>Quality drops as you leave the recorded path</td><td>Hallucination; slow unless distilled</td></tr>
+      <tr><td><strong>Evidence</strong></td><td>Authored worlds are slow to build: modeling Mcity’s 32-acre site the older way took about a year and a couple hundred thousand dollars <span class="src talk">talk†</span>.</td><td>A 2026 Mcity talk: about a week of GPU time with NuRec, against a year and a couple hundred thousand dollars the older way.</td><td>OmniDreams (arXiv 2606.03159) studies action-conditioned driving video on a NuRec dataset.</td></tr>
+    </tbody>
+  </table></div>
+
+  <h3>The sim-to-real data flywheel</h3>
+  <p>Every talk in the source material describes some version of this loop. The order matters, so it is numbered.</p>
+  <ol class="steps">
+    <li><span><strong>Seed</strong> with a little real data: tens of teleoperation demos, fleet drives, archived video.</span></li>
+    <li><span><strong>Reconstruct or compose</strong> worlds: NuRec turns logs into editable Gaussian scenes; Isaac Sim and SimReady assets compose new ones.</span></li>
+    <li><span><strong>Multiply trajectories in physics</strong>: DexMimicGen generated about 21,000 demonstrations from 60 human source demos (arXiv 2410.24185); on a real humanoid can-sorting task its generated data produced a 90% success policy, against 0% from the human demos alone. Isaac Lab runs thousands of environments.</span></li>
+    <li><span><strong>Multiply appearance</strong> with Cosmos Transfer: segmentation, depth and edges from the simulator condition photoreal video, so labels survive.</span></li>
+    <li><span><strong>Dream new behaviors</strong>: post-train a world model on the robot's own data, prompt new tasks, recover actions with inverse dynamics (GR00T Dreams).</span></li>
+    <li><span><strong>Filter</strong> generated data with a reasoning model that grades physical plausibility.</span></li>
+    <li><span><strong>Curate and search</strong> for gaps and corner cases.</span></li>
+    <li><span><strong>Train</strong> on real plus synthetic. In GR00T N1, neural augmentation expands in-house teleop from 88.4 h to 827.3 h. Real-robot hours in Table 7 are 3,288.8 h, larger than the simulation-plus-neural portion.</span></li>
+    <li><span><strong>Evaluate somewhere else</strong>: another simulator, a reconstructed scene, the real robot.</span></li>
+    <li><span><strong>Deploy and feed back</strong>: failures become the next seed.</span></li>
+  </ol>
+  <div class="note key">
+    <span class="tag">The experiment to remember</span>
+    <p>X-Mobility (arXiv 2410.17491), an NVIDIA navigation model trained on Isaac Sim synthetic data, transferred zero-shot to a real Nova Carter. The sim-to-sim test in chapter 8 shows the same discipline on a CPU. <strong>Evaluate somewhere other than where you generated</strong>: a policy that only works in its training simulator has proven only that it can exploit that simulator.</p>
+  </div>
+</div>
+</section>
+
+<!-- =============================== PART II =============================== -->
+<section class="chapter layer-physics" id="openusd">
+<div class="col">
+  <p class="part-label">Part II · Worlds and physics</p>
+  <h2><span class="n">4</span>OpenUSD and SimReady</h2>
+  <p><strong>OpenUSD</strong> (Universal Scene Description) is the scene format every tool in the stack reads and writes. For a software engineer, the right mental model is a version-control system for scenes. A <em>layer</em> is a file of <em>opinions</em> about prims (scene objects) and their properties. A <em>stage</em> is the composed result of many layers. Nothing is overwritten; stronger opinions win.</p>
+
+  <h3>Composition: who wins</h3>
+  <p>Conflicts resolve by the strength order <strong>LIVERPS</strong>, strongest first: Local, Inherits, VariantSets, Relocates, References, Payload, Specializes. Through OpenUSD v24.11 the glossary was LIVRPS, before Relocates. In practice:</p>
+  <ul>
+    <li><code>def</code> defines a prim, <code>over</code> patches a prim defined elsewhere, <code>class</code> is an abstract base for inherits.</li>
+    <li>A <strong>reference</strong> brings in another file's prim. A <strong>payload</strong> is a lazy reference you can leave unloaded: the tool for heavy geometry and optional features.</li>
+    <li>A <strong>variant set</strong> switches between alternatives (color, gripper type, level of detail) inside one asset.</li>
+    <li>Anything ending in <code>API</code> is an applied schema that adds behavior to a prim: <code>PhysicsRigidBodyAPI</code>, <code>MassAPI</code>, <code>MaterialBindingAPI</code>.</li>
+  </ul>
+  <div class="note gotcha"><span class="tag">Gotcha</span><p>Adding a referenced asset as a <em>sublayer</em> and editing it edits the original file. Sublayers share authority; references do not.</p></div>
+
+  <h3>SimReady: assets a robot can use</h3>
+  <p>Graphics assets are hollow shells: no joints, no colliders, no mass. <strong>SimReady</strong> is the content specification that fixes that: validated articulations and joint limits, efficient collision proxies (convex hulls for speed, signed distance fields for tight tolerances), solver-friendly meshes, correct units and pivots, semantic labels, and materials that survive generative re-rendering (glass and printed text are the known failure cases) <span class="src talk">talk†</span>.</p>
+  <p>Isaac Sim 6 documents a layered USD asset. Typical files are <code>base.usda</code>, <code>geometries.usd</code>, <code>instances.usda</code>, <code>materials.usda</code>, and <code>physics.usd</code>, composed into one entry, <code>asset.usd</code> or <code>interface.usda</code>. Feature opinions (physics, sensors, ROS, control) stay in their own layers and load as payloads.</p>
+  <p class="code-label">Authoring the physics feature layer with the <code>pxr</code> Python API</p>
+<pre><code>from pxr import Usd, UsdGeom, UsdPhysics
+
+stage = Usd.Stage.CreateNew("asset_physics.usda")
+UsdGeom.SetStageUpAxis(stage, UsdGeom.Tokens.z)      # robotics is Z-up
+UsdGeom.SetStageMetersPerUnit(stage, 1.0)
+
+root = stage.OverridePrim("/quadruped")              # an "over": opinions on prims defined in other layers
+stage.SetDefaultPrim(root)
+UsdPhysics.ArticulationRootAPI.Apply(root)           # exactly one articulation root, on the top robot prim
+
+base = stage.OverridePrim("/quadruped/base")
+UsdPhysics.RigidBodyAPI.Apply(base)
+UsdPhysics.MassAPI.Apply(base).CreateMassAttr(10.0)  # kilograms
+stage.Save()</code></pre>
+  <div class="note measured"><span class="tag">Measured while building this manual</span><p>A 10-layer quadruped asset built this way passed a 13-check validator (default prim, Z-up, units, one articulation root, joint limits, mass and collider on every body, payloads resolve) and loaded into Newton with the same 13 bodies, 18 degrees of freedom and 30.702 kg as the URDF. After 1 s of simulation the base sat at 0.4585 m from USD versus 0.4587 m from URDF <span class="src">measured</span>.</p></div>
+  <p>The standard is still growing. An AOUSD proposal adds deformable bodies (volumes, surfaces, curves, attachments) to UsdPhysics. Newton 1.4.0 (16 July 2026) is the first Newton release that adds an experimental importer for that schema <span class="src">repo</span>.</p>
+</div>
+</section>
+
+<section class="chapter layer-physics" id="omniverse">
+<div class="col">
+  <p class="part-label">Part II · Worlds and physics</p>
+  <h2><span class="n">5</span>Omniverse: the platform</h2>
+  <p>Omniverse began as a digital-twin platform. Isaac was built on it, and Physical AI adopted it. Its job is to compose OpenUSD scenes in real time, render them with physically based sensors, and stream them.</p>
+  <div class="two">
+    <div><h4>Kit and extensions</h4><p>Apps are built from the <strong>Kit App Template</strong>. NVIDIA deprecated the Omniverse Launcher on 1 October 2025. Functionality lives in extensions: an <code>extension.toml</code> manifest plus Python that implements <code>omni.ext.IExt</code> and an <code>omni.ui</code> window.</p></div>
+    <div><h4>Sensors</h4><p>Physically based cameras with lens models, LiDAR, and radar from the same scene, each with ground truth.</p></div>
+    <div><h4>Replicator and Nucleus</h4><p>Replicator randomizes scenes and writes labeled data (chapter 9). Nucleus stores shared assets and live sessions.</p></div>
+  </div>
+  <div class="note gotcha"><span class="tag">Gotcha</span><p>Add extensions to the app's <code>.kit</code> file <em>before</em> building the app; adding them afterwards does not register them <span class="src talk">talk†</span>.</p></div>
+</div>
+</section>
+
+<section class="chapter layer-physics" id="newton">
+<div class="col">
+  <p class="part-label">Part II · Worlds and physics</p>
+  <h2><span class="n">6</span>Physics engines and Newton</h2>
+  <p>Game physics optimizes for speed and plausibility. Robot learning needs fidelity and robustness, because small modeling errors "quickly turn into unrealistic behaviors" in a learned policy <span class="src talk">talk†</span>. It also needs engines that researchers can modify, that run thousands of worlds in parallel, and that speak tensors and gradients.</p>
+  <p><strong>Newton</strong> is the answer from NVIDIA, Google DeepMind and Disney Research: an open-source GPU physics engine built on NVIDIA Warp, with MuJoCo Warp as its main rigid-body backend, governed as a Linux Foundation project <span class="src">repo</span>. Newton 1.0 reached general availability on 16 March 2026 at GTC 2026, after a beta unveiled in September 2025, and Isaac Lab 3.0 integrates it natively. v1.4.0 followed on 16 July 2026; check the releases page for later versions <span class="src">repo</span>.</p>
+
+  <h3>Five classes and one loop</h3>
+  <figure>
+    <div class="frame">
+      <svg viewBox="0 0 720 250" width="100%" role="img" aria-label="Newton loop: ModelBuilder, finalize, Model, State Control Contacts, collide, solver step, swap states; solvers plug into step">
+        <g font-size="13">
+          <rect x="10" y="20" width="130" height="50" rx="6" class="f-sheet"/><text x="75" y="50" text-anchor="middle" class="svg-ink" font-weight="600">ModelBuilder</text>
+          <rect x="180" y="20" width="110" height="50" rx="6" class="f-physics"/><text x="235" y="42" text-anchor="middle" class="t-physics" font-weight="700">Model</text><text x="235" y="60" text-anchor="middle" class="svg-muted" font-size="11">time-invariant</text>
+          <rect x="330" y="20" width="380" height="50" rx="6" class="f-sheet"/><text x="520" y="42" text-anchor="middle" class="svg-ink" font-weight="600">State · Control · Contacts</text><text x="520" y="60" text-anchor="middle" class="svg-muted" font-size="11">positions and velocities · actuation · collision output</text>
+          <path d="M140 45 H175" class="svg-line" stroke-width="1.5" marker-end="url(#arr2)"/><text x="158" y="38" text-anchor="middle" class="svg-muted" font-size="10">finalize()</text>
+          <path d="M290 45 H325" class="svg-line" stroke-width="1.5" marker-end="url(#arr2)"/>
+          <rect x="120" y="120" width="210" height="46" rx="6" class="f-physics"/><text x="225" y="148" text-anchor="middle" class="svg-ink" font-weight="600">pipeline.collide(state, contacts)</text>
+          <rect x="390" y="120" width="230" height="46" rx="6" class="f-physics"/><text x="505" y="148" text-anchor="middle" class="svg-ink" font-weight="600">solver.step(s0, s1, ctrl, contacts, dt)</text>
+          <path d="M330 143 H385" class="svg-line" stroke-width="1.5" marker-end="url(#arr2)"/>
+          <path d="M505 166 V196 H225 V171" class="svg-line" stroke-width="1.4" stroke-dasharray="5 4" marker-end="url(#arr2)"/>
+          <text x="365" y="212" text-anchor="middle" class="svg-muted" font-size="12">swap s0 and s1, repeat per substep</text>
+          <path d="M520 70 V115" class="svg-line" stroke-width="1.2" stroke-dasharray="3 3"/>
+          <text x="10" y="240" class="svg-muted" font-size="12">Solvers plug into step(): MuJoCo · XPBD · VBD · Featherstone · SemiImplicit · ImplicitMPM · Kamino · coupled</text>
+        </g>
+        <defs><marker id="arr2" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0 0 L10 5 L0 10 z" class="svg-muted"/></marker></defs>
+      </svg>
+    </div>
+    <figcaption>Newton separates what never changes (<code>Model</code>) from what changes every step (<code>State</code>, <code>Control</code>, <code>Contacts</code>) and from how time advances (<code>Solver</code>). One model can be stepped by any solver. Drawn from the Newton source code.</figcaption>
+  </figure>
+  <p class="code-label">The core of Newton's double-pendulum example (abridged from <code>newton/examples/basic/example_basic_pendulum.py</code>)</p>
+<pre><code>builder = newton.ModelBuilder()
+link_0 = builder.add_link()
+builder.add_shape_box(link_0, hx=1.0, hy=0.1, hz=0.1)
+j0 = builder.add_joint_revolute(parent=-1, child=link_0, axis=wp.vec3(0.0, 1.0, 0.0), ...)
+builder.add_articulation([j0, ...], label="pendulum")
+builder.add_ground_plane()
+
+model = builder.finalize()
+solver = newton.solvers.SolverXPBD(model)
+state_0, state_1 = model.state(), model.state()
+control = model.control()
+newton.eval_fk(model, model.joint_q, model.joint_qd, state_0)   # not required for MuJoCo; required for others
+
+pipeline = newton.CollisionPipeline(model)
+contacts = pipeline.contacts()
+
+for _ in range(sim_substeps):                 # 10 substeps per 1/100 s frame in the example
+    state_0.clear_forces()
+    pipeline.collide(state_0, contacts)
+    solver.step(state_0, state_1, control, contacts, sim_dt)
+    state_0, state_1 = state_1, state_0       # swap states</code></pre>
+  <p>On a GPU the substep loop is recorded once with <code>wp.ScopedCapture()</code> and replayed as a CUDA graph, which removes Python and launch overhead from every frame. Many worlds come from <code>builder.replicate(template, world_count=N)</code>; world <code>-1</code> holds shared entities such as the ground plane.</p>
+
+  <h3>The solver zoo</h3>
+  <p>"There's no one true solver" <span class="src talk">talk†</span>. Newton ships several, each for a class of problem <span class="src">repo</span>:</p>
+  <div class="table-scroll"><table>
+    <thead><tr><th>Solver</th><th>Use it for</th><th>Notes</th></tr></thead>
+    <tbody>
+      <tr><td><code>SolverMuJoCo</code></td><td>Articulated robots at scale; the robot-learning default</td><td>Wraps MuJoCo Warp; can consume Newton's SDF and hydroelastic contacts with <code>use_mujoco_contacts=False</code>; CPU fallback with <code>use_mujoco_cpu=True</code></td></tr>
+      <tr><td><code>SolverXPBD</code></td><td>Cheap position-based rigid bodies</td><td>Default in the basic examples</td></tr>
+      <tr><td><code>SolverVBD</code></td><td>Cloth, soft bodies, rods and cables, rigid-soft coupling</td><td>Needs <code>builder.color()</code>; experimental</td></tr>
+      <tr><td><code>SolverFeatherstone</code>, <code>SolverSemiImplicit</code></td><td>Differentiable simulation</td><td><code>finalize(requires_grad=True)</code> plus <code>wp.Tape</code></td></tr>
+      <tr><td><code>SolverImplicitMPM</code></td><td>Sand, snow, mud, water, multi-material</td><td>Docs follow Daviet and Bertails-Descoubes (2016); the SIGGRAPH 2026 mixed-MPM work is a newer, related method</td></tr>
+      <tr><td><code>SolverKamino</code></td><td>Closed kinematic loops, hard contact</td><td>From Disney; marked beta</td></tr>
+      <tr><td><code>solvers.experimental.coupled</code></td><td>Two solvers in one scene</td><td>Proxy and ADMM coupling</td></tr>
+    </tbody>
+  </table></div>
+
+  <h3>Contact and deformables</h3>
+  <p>The collision pipeline runs a broad phase (explicit pairs, n×n, or sweep-and-prune), then a narrow phase: MPR and GJK for convex shapes, BVH for raw meshes, precomputed signed distance fields for constant-time mesh queries, and opt-in <strong>hydroelastic contact</strong> that computes contact over an area instead of at points. Area contact maps naturally onto tactile sensing. A deterministic mode gives bit-exact repeatability on the same GPU architecture, as long as the solver is deterministic too <span class="src">repo</span>.</p>
+  <p>Deformables come in four dimensions: particles and MPM (0D), Cosserat rods with hysteresis so cables keep their bent shape (1D), thin shells with continuous collision (2D), and tetrahedral soft bodies (3D). Divide and Truncate (Chen et al., arXiv 2604.15513; SIGGRAPH 2026) dropped 200 layers of cloth (4M vertices, 7.84M triangles) onto a cylinder, sustaining more than 20 million simultaneous contact pairs without penetration. ImplicitMPM’s documentation follows the 2016 Daviet and Bertails-Descoubes method; Daviet’s SIGGRAPH 2026 paper, Mixed Material Point Methods for Stiff Elastoplasticity, extends that line of work to stiff elastoplastic materials.</p>
+
+  <h3>Why GPUs matter here</h3>
+  <p>Isaac Lab runs thousands of environments in parallel on a GPU, with PhysX or Newton underneath. The task id <code>Isaac-Velocity-Rough-G1-v0</code> is in the Isaac Lab repository.</p>
+  <div class="note gotcha"><span class="tag">Conventions that bite</span>
+    <ul>
+      <li>Z is up, and quaternions are <strong>XYZW</strong>. MuJoCo and Isaac use WXYZ.</li>
+      <li>Maximal-coordinate solvers (XPBD, SemiImplicit, VBD) need <code>newton.eval_fk</code> after <code>finalize()</code>.</li>
+      <li>Call <code>SolverX.register_custom_attributes(builder)</code> before adding entities that need them.</li>
+      <li>macOS runs CPU-only. APIs move monthly, so pin the version.</li>
+    </ul>
+  </div>
+
+  <h3>A solver bake-off you can reproduce</h3>
+  <p>To see how much solver choice matters, the same quadruped was dropped from 0.7 m and held in a crouch by joint drives, with six solver paths, 100 frames per second and 10 substeps (1 ms per step), on a 4-core CPU <span class="src">measured</span>.</p>
+  <div class="table-scroll"><table>
+    <thead><tr><th>Solver path</th><th class="num">Settle height</th><th class="num">Settle time</th><th class="num">ms per 10 ms frame</th></tr></thead>
+    <tbody>
+      <tr><td>MuJoCo, C backend (<code>use_mujoco_cpu=True</code>)</td><td class="num">0.459 m</td><td class="num">0.58 s</td><td class="num">5.7</td></tr>
+      <tr><td>SemiImplicit</td><td class="num">0.432 m</td><td class="num">1.85 s</td><td class="num">8.8</td></tr>
+      <tr><td>XPBD</td><td class="num">0.460 m</td><td class="num">1.05 s</td><td class="num">14.1</td></tr>
+      <tr><td>Featherstone</td><td class="num">0.449 m</td><td class="num">0.65 s</td><td class="num">17.8</td></tr>
+      <tr><td>VBD (<code>rigid_compliant_alm=True</code>)</td><td class="num">0.458 m</td><td class="num">1.02 s</td><td class="num">22.8</td></tr>
+      <tr><td>MuJoCo Warp on the Warp CPU device</td><td class="num">0.459 m</td><td class="num">0.58 s</td><td class="num">57.0</td></tr>
+    </tbody>
+  </table></div>
+  <figure>
+    <div class="frame plot"><img src="img/phase0-base-height.png" alt="Base height over four seconds for six solvers; four settle near 0.46 m, Featherstone at 0.449 m, SemiImplicit oscillating near 0.433 m" width="1500" height="600" loading="lazy"></div>
+    <figcaption>Base height per solver. The four closer paths are 0.458 m, 0.459 m, 0.459 m, and 0.460 m, a span of 2.0 mm. Featherstone at 0.449 m and SemiImplicit at 0.432 m sit about 1.0 cm and 2.7 cm below that cluster, and SemiImplicit still oscillates after 4 s <span class="src">measured</span>. The plot file is not in this folder.</figcaption>
+  </figure>
+  <p>Three lessons came out of it. The two MuJoCo backends agree within 1 µm, but on a CPU the C backend is ten times faster than MuJoCo Warp, which is built for GPUs. XPBD and MuJoCo Warp trajectories were bit-identical across runs. And Newton's sand-walking example <code>mpm_anymal</code> couples one way: the robot pushes the sand, but the sand never pushes back, so the robot's path on sand is identical to its path on rigid ground. For a terrain study you need two-way coupling.</p>
+</div>
+</section>
+
+<section class="chapter layer-data" id="isaacsim">
+<div class="col">
+  <p class="part-label">Part II · Worlds and physics</p>
+  <h2><span class="n">7</span>Isaac Sim and ROS 2: software in the loop</h2>
+  <p><strong>Isaac Sim</strong> is NVIDIA's robot simulator on Omniverse: URDF and MJCF import, physical sensors, OmniGraph visual scripting, and a ROS 2 bridge. Its main use is <strong>software in the loop</strong>: run the robot's real software stack (Nav2, MoveIt 2, perception) against a virtual body before touching hardware. Isaac Sim is the body and senses; a ROS 2 container is the brain; both share one DDS domain.</p>
+
+  <h3>The drive graph, node by node</h3>
+  <p>A differential-drive robot turns Nav2's velocity command into wheel speeds through an Action Graph. This is the graph from a live OmniGraph inspector for a Nova Carter robot, with its real values:</p>
+  <ol class="steps">
+    <li><span><code>OnPlaybackTick</code> fires every frame and provides <code>deltaSeconds</code>.</span></li>
+    <li><span><code>ROS2Context</code> joins DDS domain 0 (or reads <code>ROS_DOMAIN_ID</code>).</span></li>
+    <li><span><code>ROS2SubscribeTwist</code> listens on <code>cmd_vel</code> with a queue of 10.</span></li>
+    <li><span>Two <code>BreakVector3</code> nodes pull out <code>linear.x</code> and <code>angular.z</code>.</span></li>
+    <li><span><code>DifferentialController</code> on a Nova Carter: wheel radius 0.14 m and wheel distance 0.413 m, the values in NVIDIA's Nova Carter ROS graph tutorial and in Isaac Sim's MobilityGen Carter config. The wheel joints are <code>joint_wheel_left</code> and <code>joint_wheel_right</code>. A wrong wheel distance scales every commanded yaw rate by the same error.</span></li>
+    <li><span><code>IsaacArticulationController</code> drives the two wheel joints, named through a <code>ConstructArray</code> of tokens.</span></li>
+  </ol>
+  <p>Further graphs publish what a real robot would: <code>/scan</code> or a point cloud from LiDAR, <code>rgb</code> and <code>camera_info</code> from a render product, IMU readings, odometry, the TF tree, and <code>/clock</code> so every node runs on simulation time.</p>
+
+  <h3>Bringing up Nav2</h3>
+  <p>Order matters. Navigation does nothing until the transform chain <code>map → odom → base_link</code> exists.</p>
+  <ol class="steps">
+    <li><span>Map server loads the occupancy map.</span></li>
+    <li><span>AMCL localizes and publishes <code>map → odom</code>.</span></li>
+    <li><span>Planner server computes global paths.</span></li>
+    <li><span>Controller server follows them and publishes <code>cmd_vel</code>.</span></li>
+    <li><span>Behavior tree navigator ties goals to planner and controller.</span></li>
+  </ol>
+  <h3>Arms: MoveIt 2</h3>
+  <p>For a Franka Panda, Isaac Sim publishes joint states on <code>isaac_joint_states</code> and subscribes to commands on <code>isaac_joint_commands</code>. MoveIt's <code>ros2_control</code> description is switched to a topic-based hardware interface that talks to those two topics, and its controller file needs the <code>action_ns</code> and <code>default</code> keys the Setup Assistant leaves out <span class="src talk">talk†</span>.</p>
+  <div class="note gotcha"><span class="tag">Gotchas from the tutorials</span>
+    <ul>
+      <li>Put the articulation root on the top-level robot prim, or you get "no robot prim found".</li>
+      <li>Wheels use velocity drives (stiffness 0, high damping); steering knuckles use position drives.</li>
+      <li>Containers on one host must share <code>ROS_DOMAIN_ID</code>; the Isaac side should use UDP-only DDS, because shared memory cannot cross the container boundary.</li>
+      <li>Stamp messages with simulation time, or TF lookups fail in confusing ways.</li>
+    </ul>
+  </div>
+</div>
+</section>
+
+<section class="chapter layer-data" id="isaaclab">
+<div class="col">
+  <p class="part-label">Part II · Worlds and physics</p>
+  <h2><span class="n">8</span>Isaac Lab and robot learning</h2>
+  <p><strong>Isaac Lab</strong> is the GPU-parallel reinforcement- and imitation-learning framework on Isaac Sim, with PhysX or Newton underneath.</p>
+  <h3>Anatomy of a task</h3>
+  <p>A manager-based task is a set of configuration classes:</p>
+  <div class="table-scroll"><table>
+    <thead><tr><th>Part</th><th>What it defines</th><th>Example</th></tr></thead>
+    <tbody>
+      <tr><td>Scene</td><td>Robot, objects, terrain, sensors, replicated across environments</td><td>G1 humanoid and a box on a table</td></tr>
+      <tr><td>Actions</td><td>What the policy outputs</td><td>Joint position targets for the arm</td></tr>
+      <tr><td>Observations</td><td>What the policy sees</td><td>Joint positions and velocities, object pose, last action</td></tr>
+      <tr><td>Commands</td><td>Goals sampled per episode</td><td>Target velocity or target position</td></tr>
+      <tr><td>Rewards</td><td>Weighted terms summed each step</td><td>Dense "wrist closer to object", "object closer to target", a success bonus</td></tr>
+      <tr><td>Terminations</td><td>When an episode ends</td><td>Time-out, object dropped, robot fell</td></tr>
+      <tr><td>Events</td><td>Domain randomization</td><td>Mass, friction, pushes, sensor noise</td></tr>
+    </tbody>
+  </table></div>
+<pre><code>python scripts/reinforcement_learning/rsl_rl/train.py --task Isaac-Velocity-Rough-G1-v0 --num_envs 10000 --headless --max_iterations 500
+python scripts/reinforcement_learning/rsl_rl/play.py  --task Isaac-Velocity-Rough-G1-Play-v0 --checkpoint logs/rsl_rl/.../model_499.pt</code></pre>
+  <div class="note gotcha"><span class="tag">Gotchas</span>
+    <ul>
+      <li>Running <code>play.py</code> on a custom task without <code>--checkpoint</code> loads an untrained policy, and the robot does not move.</li>
+      <li>Ending an episode on success can teach the policy to avoid the goal if success cuts off future reward. Paying the bonus every step at the goal avoids that.</li>
+      <li><code>--num_envs</code> trades throughput against GPU memory.</li>
+    </ul>
+  </div>
+  <h3>Sim-to-sim before sim-to-real</h3>
+  <p>A policy that works in the simulator it was trained in has only proven it can exploit that simulator. The humanoid teams use <strong>another physics engine as a litmus test</strong> before hardware <span class="src talk">talk†</span>. Export the policy to ONNX, map the joint order between engines (Isaac Lab and MuJoCo order joints differently), rebuild the observation vector, and run it elsewhere.</p>
+  <div class="note measured"><span class="tag">Measured while building this manual</span><p>The PhysX-trained ANYmal C walking policy that ships with Newton ran in Newton on a CPU and walked 2.714 m in 3.0 s without falling. The joint-order maps derived from joint names matched the arrays hard-coded in Newton's own example <span class="src">measured</span>.</p></div>
+</div>
+</section>
+
+<!-- =============================== PART III =============================== -->
+<section class="chapter layer-data" id="sdg">
+<div class="col">
+  <p class="part-label">Part III · Data from pixels</p>
+  <h2><span class="n">9</span>Synthetic data for perception</h2>
+  <p>Perception models need labeled images at a scale no annotation team can produce. A simulator knows the exact class, box, depth and segmentation of every pixel, so labels are free. The work is making the images varied enough that a model trained on them works on real cameras.</p>
+  <h3>Domain randomization with Replicator</h3>
+  <ol class="steps">
+    <li><span>Load a scene (a warehouse) and the target asset (a pallet jack).</span></li>
+    <li><span>Register randomizers: camera pose, target color and pose, floor and wall textures, lighting, distractor objects.</span></li>
+    <li><span>Attach a writer (KITTI or COCO) and generate frames; the tutorial used 2,000 per distractor set.</span></li>
+    <li><span>Hold out a validation split (14% in the tutorial) and fine-tune a detector.</span></li>
+  </ol>
+  <p>Replicator’s job is the method: randomize the scene, write KITTI or COCO labels, and fine-tune a detector on the result.</p>
+  <h3>From synthetic-looking to photoreal</h3>
+  <p>Renders still look rendered. <strong>Cosmos Transfer</strong> takes the simulator's depth, segmentation or edge video plus a text prompt and produces photoreal video with the same geometry, so the labels still line up. In the Cosmos Predict 2.5 paper, Transfer augmentation took a real-robot Diffusion Policy trained on 100 demos from 1/30 to 24/30 successes, against 5/30 with classic image augmentation <span class="src">paper</span>.</p>
+  <div class="note key"><span class="tag">Conditioning is control</span><p>What you feed the world model is preserved; what you leave out, it is free to imagine. To vary shadows, condition on segmentation, which has no baked shadows. To keep lane markings, include them in the condition. For a pedestrian that only needs to be "a person in a box", an HD map plus bounding boxes is enough <span class="src talk">talk†</span>.</p></div>
+</div>
+</section>
+
+<section class="chapter layer-world" id="nurec">
+<div class="col">
+  <p class="part-label">Part III · Data from pixels</p>
+  <h2><span class="n">10</span>Neural reconstruction: real places as simulations</h2>
+  <p><strong>3D Gaussian splatting</strong> represents a scene as millions of small 3D Gaussians, each with a position, a covariance (its size and orientation), an opacity and a view-dependent color. They are fitted to camera images by differentiable rasterization and rendered in real time. <strong>NuRec</strong> is NVIDIA's productized pipeline for doing this from vehicle and robot sensor logs, rendering cameras and LiDAR from one representation.</p>
+  <h3>The pipeline, as Mcity ran it</h3>
+  <ol class="steps">
+    <li><span>Capture with a calibrated camera and lidar rig, plus poses. Mcity’s public description uses roof cameras, GPS/IMU, and LiDAR with time sync.</span></li>
+    <li><span>Convert the ROS bag to the reconstruction input format and generate auxiliary data: segmentation and an ego-vehicle mask.</span></li>
+    <li><span>Preview with Instant NuRec, a feed-forward model: about 1.5 s for a 10–20 s multi-camera clip, against about 75 min of per-scene optimization for full NuRec; adding LiDAR takes it to about 20 s (arXiv 2607.14203).</span></li>
+    <li><span>Run the full reconstruction on an RTX PRO 6000 or H100.</span></li>
+    <li><span>Export a USDZ scene and serve it to simulators (Isaac Sim, CARLA, AlpaSim).</span></li>
+  </ol>
+  <div class="table-scroll"><table>
+    <thead><tr><th>Mcity, a 32-acre test environment</th><th>What is public</th></tr></thead>
+    <tbody>
+      <tr><td>Facility size</td><td>32 acres (University of Michigan, 20 July 2015)</td></tr>
+      <tr><td>2026 member-meeting talk</td><td>About a year and a couple hundred thousand dollars the older way, versus about a week of GPU time with NuRec</td></tr>
+    </tbody>
+  </table></div>
+  <h3>The weakness: leaving the recorded path</h3>
+  <p>A reconstruction is only well constrained where the cameras looked. Drive a different line and you see surfaces from angles nobody recorded. NuRec’s helpers address this: <strong>Fixer</strong> repairs off-trajectory artifacts, <strong>Asset Harvester</strong> lifts objects out for reuse, and <strong>Harmonizer</strong> relights inserted objects. The OmniDreams paper (arXiv 2606.03159) measures the effect: as trajectory deviation grows, NuRec’s FVD rises quickly while the generative model stays much more stable.</p>
+  <figure>
+    <div class="frame plot"><img src="img/novel-view-envelope.png" alt="Fraction of visible surface samples seen within 10 degrees of a recorded ray, falling from 1.0 to about 0.54 at a 3.5 m lateral offset and 0.36 at 7 m" width="830" height="470" loading="lazy"></div>
+    <figcaption>A toy street with cameras at 1.6 m: shift the novel trajectory sideways and the share of surfaces seen within 10° of any recorded ray falls from 100% to 53.6% at one lane (3.5 m) and 36.0% at two lanes; for the road surface it falls to 17.5% and 4.1% <span class="src">measured</span>. This is why reconstruction quality degrades with trajectory deviation.</figcaption>
+  </figure>
+</div>
+</section>
+
+<section class="chapter layer-world" id="cosmos">
+<div class="col">
+  <p class="part-label">Part III · Data from pixels</p>
+  <h2><span class="n">11</span>World models: Cosmos</h2>
+  <p>A <strong>world foundation model</strong> learns how the visual world evolves and can generate or reason about it. Cosmos is NVIDIA's open family. It changed a lot in twenty months, so always name the generation.</p>
+  <div class="table-scroll"><table>
+    <thead><tr><th>Generation</th><th>When</th><th>What it was</th></tr></thead>
+    <tbody>
+      <tr><td><strong>Cosmos 1</strong></td><td>Jan–Mar 2025</td><td>Separate models. Cosmos-Predict1 (arXiv 2501.03575, 7 January 2025) was trained on about 20 million hours of raw video. Its diffusion family is 7B and 14B DiTs on Cosmos-Tokenize1. A separate autoregressive family is 4B and 12B. Transfer1 and Reason1 papers are dated 18 March 2025.</td></tr>
+      <tr><td><strong>Cosmos 2.5</strong></td><td>Submitted 28 Oct 2025; revised 24 Feb 2026</td><td>arXiv 2511.00062. Predict 2.5 is flow matching: the network predicts velocity ε − x, time is logit-normal, and latents are Wan2.1 at 4×8×8 with 1×2×2 patchification (93 frames become 24 latent frames). Transfer 2.5 is a 2B model, 3.5× smaller than Transfer1-7B. Table 13: 100 teleop demos, 1/30 with no extra augmentation, 5/30 with classic augmentation, 24/30 with Transfer 2.5. rCM distillation of the 2B model, 4 steps: PAI-Bench text-to-world overall 0.768 → 0.764, image-to-world overall 0.810 → 0.816.</td></tr>
+      <tr><td><strong>Cosmos 3</strong></td><td>Nano and Super: 31 May 2026 (report arXiv 2606.02800, dated 22 June 2026). Edge: SIGGRAPH, 20 July 2026.</td><td>One omnimodal mixture of transformers: an autoregressive Reasoner plus a diffusion Generator. Edge is 4B on a dense 2B transformer trained from scratch; Nano (16B on 8B) and Super (64B on 32B) are initialized from Qwen3-VL-8B and Qwen3-VL-32B.</td></tr>
+    </tbody>
+  </table></div>
+
+  <h3>How Cosmos 3 works</h3>
+  <figure>
+    <div class="frame">
+      <svg viewBox="0 0 720 270" width="100%" role="img" aria-label="Cosmos 3: an autoregressive Reasoner tower and a rectified-flow Generator tower sharing attention; Reasoner outputs text, Generator outputs video, audio and actions">
+        <g font-size="13">
+          <rect x="20" y="20" width="300" height="150" rx="8" class="f-data"/>
+          <text x="170" y="46" text-anchor="middle" class="t-data" font-weight="700" font-size="16">Reasoner tower</text>
+          <text x="170" y="70" text-anchor="middle" class="svg-ink">autoregressive, causal attention</text>
+          <text x="170" y="96" text-anchor="middle" class="svg-muted">in: video, images, text</text>
+          <text x="170" y="118" text-anchor="middle" class="svg-muted">out: captions, timestamps, boxes (0–1000),</text>
+          <text x="170" y="138" text-anchor="middle" class="svg-muted">plans, plausibility verdicts</text>
+          <rect x="400" y="20" width="300" height="150" rx="8" class="f-world"/>
+          <text x="550" y="46" text-anchor="middle" class="t-world" font-weight="700" font-size="16">Generator tower</text>
+          <text x="550" y="70" text-anchor="middle" class="svg-ink">rectified flow, full attention</text>
+          <text x="550" y="96" text-anchor="middle" class="svg-muted">sees the Reasoner's keys too</text>
+          <text x="550" y="118" text-anchor="middle" class="svg-muted">out: video, audio, action chunks</text>
+          <text x="550" y="138" text-anchor="middle" class="svg-muted">shared 3D RoPE over physical time</text>
+          <path d="M320 95 H395" class="svg-line" stroke-width="1.6" marker-end="url(#arr3)"/>
+          <text x="358" y="86" text-anchor="middle" class="svg-muted" font-size="11">conditions</text>
+          <rect x="20" y="200" width="160" height="50" rx="6" class="f-sheet"/><text x="100" y="222" text-anchor="middle" class="svg-ink" font-weight="600">Forward dynamics</text><text x="100" y="240" text-anchor="middle" class="svg-muted" font-size="11">image + actions → video</text>
+          <rect x="196" y="200" width="160" height="50" rx="6" class="f-sheet"/><text x="276" y="222" text-anchor="middle" class="svg-ink" font-weight="600">Inverse dynamics</text><text x="276" y="240" text-anchor="middle" class="svg-muted" font-size="11">video → actions</text>
+          <rect x="372" y="200" width="160" height="50" rx="6" class="f-sheet"/><text x="452" y="222" text-anchor="middle" class="svg-ink" font-weight="600">Policy</text><text x="452" y="240" text-anchor="middle" class="svg-muted" font-size="11">image + task → video + actions</text>
+          <rect x="548" y="200" width="160" height="50" rx="6" class="f-sheet"/><text x="628" y="222" text-anchor="middle" class="svg-ink" font-weight="600">Transfer</text><text x="628" y="240" text-anchor="middle" class="svg-muted" font-size="11">depth/seg/edge → photoreal</text>
+        </g>
+        <defs><marker id="arr3" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0 0 L10 5 L0 10 z" class="svg-muted"/></marker></defs>
+      </svg>
+    </div>
+    <figcaption>Cosmos 3 as a mixture of transformers. The Reasoner never sees generation tokens; the Generator attends to everything. One checkpoint covers four generation modes. Drawn from the Cosmos 3 technical report and repository.</figcaption>
+  </figure>
+  <p>The generator is trained with rectified flow, the same velocity-regression family as Predict 2.5, with a masked mean-squared error and a separate noise level per modality. On Cosmos3-Super, Physics-IQ image-to-video is 43.8, rising to 48.9 with WMReward best-of-N. Video-to-video is 59.7, rising to 63.4. Cosmos-Surg-dVRK’s pooled correlation with the real robot is Pearson r = 0.718 (p &lt; 0.001). The average of the four per-task correlations is 0.707.</p>
+  <p>The key idea is that <strong>action is a modality</strong>: "a modality whose tokens represent transitions between consecutive visual states" <span class="src">repo</span>. Each ego or effector pose is 9D (3D translation and 6D rotation, mapped back to a rotation matrix by SVD). Figure 3 totals: an autonomous vehicle is 9D, a single arm is 10D, a humanoid is 29D, and an egocentric human is 57D. A simple gripper adds one dimension. A five-finger hand can be 15D.</p>
+  <p>The Cosmos 3 report (Table 19) gives Cosmos3-Nano-Policy-DROID 39.7% on RoboLab-120 with specific instructions and 36.8% with default instructions. On the public RoboLab-120 overall leaderboard: Cosmos3-Nano-Policy 36.8%, π0.5 28.0%, GR00T N1.6 7.2%. In September 2026, Black Forest Labs' 7B FLUX 3 Action reported 42.92%, above Cosmos 3 Nano. The report’s RoboArena first place is the ranking at 14:40 on 30 May 2026.</p>
+
+  <h3>Using the Reasoner as a judge</h3>
+  <p class="code-label">A physical-plausibility question in the Cosmos 3 cookbook's wording, sent to an OpenAI-compatible vLLM server</p>
+<pre><code>import openai
+client = openai.OpenAI(api_key="EMPTY", base_url="http://&lt;server&gt;:8000/v1")
+question = (
+    "Is this video physically plausible/possible according to your understanding of e.g. object permanence, "
+    "shape constancy (objects maintain shape over time), continuous trajectories of objects? Assume it is the "
+    "normal laws of physics.\nYour answer should be based on the events in the video and ignore the quality of "
+    "the simulation engine.\n(A) Possible\n(B) Impossible\n\n"
+    "Answer the question using the following format:\n\n&lt;think&gt;\nYour reasoning.\n&lt;/think&gt;\n\n"
+    "Write your final answer immediately after the &lt;/think&gt; tag."
+)
+r = client.chat.completions.create(
+    model=client.models.list().data[0].id,
+    messages=[{"role": "user", "content": [                     # media goes before text
+        {"type": "video_url", "video_url": {"url": "file:///data/clips/sand_s0.mp4"}},
+        {"type": "text", "text": question}]}],
+    max_tokens=4096, temperature=0.6, top_p=0.95,
+)</code></pre>
+  <h3>Hardware reality</h3>
+  <div class="table-scroll"><table>
+    <thead><tr><th>Workload</th><th>Hardware</th><th>Reported speed</th></tr></thead>
+    <tbody>
+      <tr><td>Nano Reasoner, H100 80GB, 50 input tokens, 100 output tokens, 1 fps video</td><td>H100 80GB. Full Nano checkpoint ≈15.7B parameters (≈31.5 GB in BF16).</td><td>Time to first token 143.36 ms, 115.24 tokens/s <span class="src">repo</span></td></tr>
+      <tr><td>Nano Generator, 720p, 189 frames</td><td>H100 80GB or B200</td><td>About 208 s on H100, about 115 s on B200 <span class="src">repo</span></td></tr>
+      <tr><td>Edge Generator, 480p, 121 frames, vLLM-Omni</td><td>One GPU, including DGX Spark</td><td>13.33 s on H100, 89.41 s on DGX Spark <span class="src">repo</span></td></tr>
+      <tr><td>Shipped fine-tuning recipes</td><td>Tested on 8× H100 80GB. The GPU count can be changed.</td><td>—</td></tr>
+    </tbody>
+  </table></div>
+  <div class="note gotcha"><span class="tag">Limits, in Cosmos 3's own words</span><p>The README warns of artifacts in long, high-resolution or physically complex outputs, temporal inconsistency, object morphing, inaccurate 3D structure and implausible dynamics, and says that "applications that require physically grounded simulation, safety-critical control, or complex multi-agent behavior need additional validation" <span class="src">repo</span>. A world model preserves what you condition on and imagines the rest. It is not a physics engine.</p></div>
+
+  <h3>Closing the loop: Cosmos-Dreams</h3>
+  <p>For AV testing, NVIDIA showed a real-time, action-conditioned world model in a closed loop <span class="src talk">talk†</span>:</p>
+  <p>OmniDreams (arXiv 2606.03159) and the FlashDreams runtime are NVIDIA’s published 2026 line of action-conditioned driving world models, with results on a NuRec autonomous-vehicle dataset. A cheaper simulator is useful when it ranks policies the way a trusted one does.</p>
+  <div class="note measured"><span class="tag">Measured on a toy version</span><p>A CPU toy of this loop (a kinematic car, a rasterized "renderer" of the abstract state, five policies, four renderers of increasing degradation, 10 seeds) checks whether each renderer ranks the policies like the exact one. Kendall tau fell from 1.0 (mild) to 0.6 (moderate) to 0.2 (severe) <span class="src">measured</span>. The method generalizes: a cheaper simulator is useful if it ranks policies the way a trusted one does.</p></div>
+</div>
+</section>
+
+<!-- =============================== PART IV =============================== -->
+<section class="chapter layer-data" id="gr00t">
+<div class="col">
+  <p class="part-label">Part IV · Applications</p>
+  <h2><span class="n">12</span>Robot brains and humanoids</h2>
+  <p>Why humanoids? NVIDIA's GEAR lab gives four reasons: versatility, falling cost, a world already built for human bodies, and data, because human video and motion capture transfer to a human-shaped robot <span class="src talk">talk†</span>.</p>
+  <h3>GR00T N1: two systems</h3>
+  <p>GR00T N1 (18 March 2025) borrows the fast/slow split. The released checkpoint is branded GR00T-N1-2B and counts 2.2 billion parameters, 1.34 billion of them in <strong>Eagle-2</strong>. In the paper, that vision-language System 2 runs at 10 Hz on an L40. <strong>System 1</strong> is a diffusion transformer that outputs actions at 120 Hz. Cross-embodiment comes from small embodiment-specific encoders and decoders around shared middle layers.</p>
+  <h3>Where the data comes from</h3>
+  <ul>
+    <li><strong>Teleoperation</strong> seeds it; an hour often yields minutes of useful data after resets <span class="src talk">talk†</span>.</li>
+    <li><strong>GR00T Mimic / DexMimicGen</strong> multiplies demos in simulation. DexMimicGen: 60 human source demos to about 21,000 generated; 90% real-world success on can sorting versus 0% from the human demos alone (arXiv 2410.24185). GR00T N1’s 3,000 demonstrations per RoboCasa task come from MimicGen, a different paper.</li>
+    <li><strong>GR00T Dreams</strong> post-trains Cosmos on the robot's own data, prompts new verbs and scenes, filters the "dreams" with a reasoner, and recovers actions with an inverse-dynamics model or latent action codes.</li>
+  </ul>
+  <h3>What sits under the foundation model</h3>
+  <div class="table-scroll"><table>
+    <thead><tr><th>Layer of a humanoid</th><th>Contents</th><th class="num">Loop rate</th></tr></thead>
+    <tbody>
+      <tr><td>High-level reasoning</td><td>Scene understanding, task planning</td><td class="num">not latency-critical</td></tr>
+      <tr><td>Perception and planning</td><td>Detection, grasp and motion planning</td><td class="num">about 1–30 Hz <span class="src talk">talk†</span></td></tr>
+      <tr><td>Real-time control</td><td>Whole-body controllers such as HOVER (arXiv 2410.21229) track the policy’s targets. GR00T N1’s System 1 emits actions at 120 Hz; the paper’s 20 Hz figure is the teleoperation IK used for data collection, not the control loop.</td><td class="num">120 Hz action output (GR00T N1)</td></tr>
+      <tr><td>Hardware</td><td>Cameras, IMUs, actuators, encoders</td><td class="num">—</td></tr>
+    </tbody>
+  </table></div>
+  <p>HOVER trains a whole-body controller with an RL teacher that sees privileged state, then distills it into a student with randomized command masks so one policy can track root velocity, wrist poses, or joint targets. That controller is a separate paper from GR00T N1.</p>
+  <div class="note key"><span class="tag">Benchmarks move fast</span><p>On the RoboLab-120 overall leaderboard, Cosmos3-Nano-Policy-DROID scored 36.8% and GR00T N1.6 7.2% (NVIDIA's report quotes 39.7% vs 5.3% on the specific-instruction split) <span class="src">paper</span>. By September 2026 a third-party 7B model, FLUX 3 Action, had already passed Cosmos 3 Nano. Treat any single model as a snapshot.</p></div>
+</div>
+</section>
+
+<section class="chapter layer-world" id="av">
+<div class="col">
+  <p class="part-label">Part IV · Applications</p>
+  <h2><span class="n">13</span>Autonomous vehicles</h2>
+  <p>AV stacks have moved from many specialized networks toward end-to-end models. Rare events have to be found in fleet data, varied, and generated.</p>
+  <div class="two">
+    <div><h4>Generate and vary</h4><p>Cosmos for AV uses multi-control transfer conditioned on HD maps, boxes and LiDAR, plus video search over billions of clip embeddings to find cases like "a man in a wheelchair in a parking lot" <span class="src talk">talk†</span>.</p></div>
+    <div><h4>Scenario coverage</h4><p>Foretellix's approach: measure what fleet data covered, find coverage holes, and fill them with augmented real drives or fully synthetic scenarios, then sensor-simulate and re-render with Cosmos.</p></div>
+    <div><h4>Closed loop</h4><p>OmniDreams and FlashDreams (chapter 11) let a policy drive inside a generated world. Score that loop by whether it ranks policies the way a trusted simulator does.</p></div>
+    <div><h4>Safety architecture</h4><p>NVIDIA Halos combines classical and end-to-end AI models, with platform, algorithmic, and ecosystem safety, across DGX, Omniverse and Cosmos, and DRIVE AGX. Halos OS sits on DriveOS, which NVIDIA describes as conforming with ISO 26262 ASIL D.</p></div>
+  </div>
+  <p>ISO 26262 and ISO 21448 (SOTIF) are the automotive functional-safety and intended-functionality standards. This manual does not cover certification.</p>
+</div>
+</section>
+
+<section class="chapter layer-deploy" id="spaces">
+<div class="col">
+  <p class="part-label">Part IV · Applications</p>
+  <h2><span class="n">14</span>Smart spaces and agentic operations</h2>
+  <p>A robot sees the world from the inside out. A warehouse or a city sees it from the outside in: cameras that know where the free pallet space is, which person is too close to a humanoid, and who crossed a restricted zone. NVIDIA's Metropolis stack builds <strong>vision agents</strong> for this view.</p>
+  <ol class="steps">
+    <li><span><strong>Perceive</strong>: multi-camera 3D detection and tracking in a bird's-eye view.</span></li>
+    <li><span><strong>Specialist agents</strong>: a spatial VLM helped by segmentation and depth models; safety and metrics agents over a real-time analytics database.</span></li>
+    <li><span><strong>Orchestrate</strong>: an LLM routes each question to the right agents and tools, including USD search over the facility's digital twin.</span></li>
+    <li><span><strong>Evaluate</strong>: score both the final answer and the trajectory of tool calls.</span></li>
+  </ol>
+  <p>For cities, the Video Search and Summarization blueprint wraps existing trackers with VLMs, LLMs and retrieval, deployed from a single edge GPU with tens of cameras up to servers with hundreds.</p>
+  <div class="note key"><span class="tag">Design lesson</span><p>Break the problem into many small tools, so you can drop tools as vision-language models improve <span class="src talk">talk†</span>.</p></div>
+</div>
+</section>
+
+<section class="chapter layer-deploy" id="twins">
+<div class="col">
+  <p class="part-label">Part IV · Applications</p>
+  <h2><span class="n">15</span>Industrial twins and logistics</h2>
+  <h3>Real-time engineering twins</h3>
+  <p>A real-time engineering twin is interactive, physically accurate and in context. The trick from SIGGRAPH 2026 is to train an <strong>AI surrogate</strong> on trusted high-fidelity simulation, then explore thousands of designs a day with the surrogate instead of the solver <span class="src talk">talk†</span>. The building blocks are Warp for custom GPU solvers, PhysicsNeMo for training physics-ML models, Omniverse libraries, and Kit CAE for heavy visualization.</p>
+  <figure>
+    <div class="frame plot"><img src="img/twin-surrogate.png" alt="Three panels: temperature rise versus channel spacing for four heat loads with surrogate optima starred; surrogate versus solver scatter on the diagonal; temperature field of the winning seven-fin design" width="1500" height="400" loading="lazy"></div>
+    <figcaption>The pattern, reproduced on a CPU: a Warp heat-sink solver generated 400 designs; a small neural-network surrogate reached 0.66% mean error on 80 held-out designs and answers a single query about 15,000× faster than the solver. Its optimal channel spacing (6–9 mm) matched a full solver sweep in 4 of 4 cases <span class="src">measured</span>.</figcaption>
+  </figure>
+  <h3>Fleets and routing</h3>
+  <p>NVIDIA <strong>cuOpt</strong> solves vehicle routing on GPUs. In a community demo, cuOpt ran as a microservice next to Isaac Sim, assigned jobs to a forklift fleet over a waypoint graph, and Isaac Sim drove each forklift through an Ackermann-steering Action Graph. Two forklifts finished six jobs in 1 min 5 s <span class="src">screenshot</span>; physics mode was capped at 4× speed because faster made forklifts tip in curves <span class="src talk">talk†</span>.</p>
+  <div class="note measured"><span class="tag">Measured with a CPU baseline</span><p>A greedy-insertion plus local-search solver on the same request structure found the optimal makespan for 2 forklifts and 6 jobs, and a 216 s makespan for 5 forklifts and 20 targets against a 164.7 s lower bound. Optimizing total cost instead of makespan left 2 forklifts idle, the same behavior the demo's author described <span class="src">measured</span>.</p></div>
+  <p><strong>Mega</strong> is the Omniverse blueprint for testing fleets of robot policies in a factory twin. The launch post names KION and Accenture.</p>
+</div>
+</section>
+
+<section class="chapter layer-deploy" id="edge">
+<div class="col">
+  <p class="part-label">Part IV · Applications</p>
+  <h2><span class="n">16</span>The edge computer</h2>
+  <p>The third computer decides what is possible. As presented at GTC 2025 <span class="src talk">talk†</span>:</p>
+  <div class="table-scroll"><table>
+    <thead><tr><th>Jetson AGX Thor</th><th>As presented</th></tr></thead>
+    <tbody>
+      <tr><td>AI compute</td><td>Up to 2,070 TFLOPS sparse FP4 (1,035 TFLOPS dense FP4), 7.5× AGX Orin</td></tr>
+      <tr><td>GPU</td><td>Blackwell with native FP4/FP8; multi-instance GPU on an edge part for the first time</td></tr>
+      <tr><td>Memory</td><td>128 GB, 273 GB/s</td></tr>
+      <tr><td>Safety</td><td>IGX Thor documents a functional-safety island. Holoscan Sensor Bridge is described as contributing to SIL 2.</td></tr>
+      <tr><td>Power</td><td>40 W to 130 W</td></tr>
+    </tbody>
+  </table></div>
+  <p><strong>Distillation</strong> is the recurring recipe: a large teacher trains a small student. Cosmos 3 Edge (4B, with a 2B Nemotron-based reasoner, released 20 July 2026) runs at robot-control resolution (640×360) and generates 32 actions per inference at 15 Hz on Jetson Thor. It supports only 256p and 480p video and no video-to-video transfer: that is the price of fitting on the robot.</p>
+</div>
+</section>
+
+<!-- =============================== PART V =============================== -->
+<section class="chapter layer-core" id="eval">
+<div class="col">
+  <p class="part-label">Part V · Practice</p>
+  <h2><span class="n">17</span>Evaluation and safety</h2>
+  <p><strong>Open-loop</strong> evaluation compares a model's outputs to logged data. <strong>Closed-loop</strong> evaluation lets the model's actions change what it sees next. Open-loop scores do not predict closed-loop behavior, which is why the field built Isaac Lab Arena, RoboArena, NuRec scenes and Cosmos-Dreams.</p>
+  <div class="table-scroll"><table>
+    <thead><tr><th>Benchmark or method</th><th>What it measures</th></tr></thead>
+    <tbody>
+      <tr><td>Isaac Lab Arena</td><td>Massively parallel policy evaluation in simulated sites; one partner reported 100,000 parallel trials on its Arena-based benchmark <span class="src talk">talk†</span></td></tr>
+      <tr><td>RoboLab-120 / RoboArena</td><td>Simulated success across instruction styles / real-world pairwise ranking</td></tr>
+      <tr><td>PAI-Bench</td><td>Generation quality and control fidelity for physical AI world models</td></tr>
+      <tr><td>Ranking preservation</td><td>Does a cheaper simulator order policies like a trusted one?</td></tr>
+      <tr><td>Agent evaluation</td><td>Final answers and tool-call trajectories of operations agents</td></tr>
+    </tbody>
+  </table></div>
+  <h3>Judge the judge</h3>
+  <p>Learned judges (a Reasoner deciding whether a robot succeeded) must themselves be scored. The protocol: generate rollouts with known ground truth (fall flags, distances, contact events), ask the judge, and report precision, recall and a confusion matrix per condition. Report which failures it misses (slow sinking versus a sudden fall), not only a score.</p>
+  <div class="note gotcha"><span class="tag">Safety layers named in the sources</span><p>Halos for AVs; Thor's safety island; deliberately reduced speed and torque in the lab, because a falling 100 lb robot is "a giant human nutcracker" <span class="src talk">talk†</span>; and Cosmos 3's own warning that safety-critical control needs additional validation.</p></div>
+</div>
+</section>
+
+<section class="chapter layer-core" id="agents">
+<div class="col">
+  <p class="part-label">Part V · Practice</p>
+  <h2><span class="n">18</span>Agents and skills as the interface</h2>
+  <p>Every 2026 product in this stack ships documentation for agents. NVIDIA's skills repository covers a real-time viewer, CAD-to-SimReady conversion, USD performance tuning, and material and physics agents. NuRec ships five agent-ready skills deployable on Brev and "compatible with Claude Code, Codex CLI" <span class="src">slide</span>. The Cosmos framework ships skill folders for coding agents <span class="src">repo</span>.</p>
+  <p>The SIGGRAPH agentic-engineering talk gave the discipline: plan, change, test, verify, with hard performance gates and a design oracle <span class="src talk">talk†</span>.</p>
+  <blockquote>"'I don't know, my agent did it' is not engineering."<cite>Omniverse agentic-engineering talk, SIGGRAPH 2026 <span class="src talk">talk†</span></cite></blockquote>
+  <p>This manual's companion repository was built that way: role-specific subagents (research, fact-checking, Newton, Cosmos, Isaac/ROS, writing, figures) working in parallel git worktrees; hooks that block edits to raw sources and leaks of confidential material; lint and link checks on every edit; and a written handoff at the end of every session so the next one starts with full context.</p>
+</div>
+</section>
+
+<section class="chapter layer-deploy" id="lab">
+<div class="col">
+  <p class="part-label">Part V · Practice</p>
+  <h2><span class="n">19</span>Hands-on on a CPU</h2>
+  <p>You do not need a GPU to start. Newton, OpenUSD tooling, controller and reward math, evaluation harnesses and data preparation all run on a laptop CPU.</p>
+<pre><code>uv venv --python 3.12 .venv &amp;&amp; source .venv/bin/activate
+uv pip install --no-sources "newton[examples]"        # --no-sources if your proxy blocks NVIDIA's package index
+python -c "import newton, warp; print(newton.__version__, warp.__version__)"
+python -m newton.examples --list
+python -m newton.examples basic_pendulum --viewer null --device cpu --num-frames 60
+python -m newton.examples robot_anymal_c_walk --viewer null --device cpu --num-frames 50</code></pre>
+  <div class="table-scroll"><table>
+    <thead><tr><th>What</th><th>Runs on a CPU?</th></tr></thead>
+    <tbody>
+      <tr><td>Newton rigid bodies, small scenes, all main solvers</td><td>Yes (verified on Linux; macOS is CPU-only per the README)</td></tr>
+      <tr><td>Newton MPM terrain</td><td>Only tiny beds; the <code>mpm_anymal</code> example refuses CPU</td></tr>
+      <tr><td>Newton tiled camera</td><td>Yes at small resolution (3 worlds at 160×90 rendered in 16.8 ms per frame)</td></tr>
+      <tr><td>OpenUSD authoring and validation (<code>usd-core</code>)</td><td>Yes</td></tr>
+      <tr><td>Isaac Sim, Isaac Lab, Omniverse Kit, Replicator</td><td>No: Linux or Windows with an RTX GPU</td></tr>
+      <tr><td>Cosmos 3 models</td><td>No: client code runs anywhere, models need 24–80 GB GPUs</td></tr>
+    </tbody>
+  </table></div>
+  <p>The companion repository rebuilds eleven of the workflows in this manual as code, from the screenshots and transcripts they came from: a SimReady asset, Isaac Sim with ROS 2 Nav2, MoveIt 2, Isaac Lab, Replicator data generation, Newton at GPU scale, Cosmos transfer and a Reasoner incident agent, NuRec capture preparation, cuOpt fleet routing, a Kit extension and an AI-physics twin. Every CPU path is tested; every GPU path is included and marked as not executed.</p>
+</div>
+</section>
+
+<section class="chapter layer-core" id="path">
+<div class="col">
+  <p class="part-label">Part V · Practice</p>
+  <h2><span class="n">20</span>An eight-week learning path</h2>
+  <p>About eight focused hours a week. Each week ends with something that runs.</p>
+  <ol class="steps">
+    <li><span><strong>OpenUSD.</strong> Layers, opinions, LIVERPS, references versus payloads. Build a layered robot asset and validate it. <em>Chapter 4.</em></span></li>
+    <li><span><strong>Newton basics.</strong> Run the pendulum and URDF examples on CPU; write the five-class loop yourself. <em>Chapter 6.</em></span></li>
+    <li><span><strong>Solvers and contact.</strong> Reproduce the solver bake-off; change contact stiffness and watch the settle height move.</span></li>
+    <li><span><strong>Policies in simulation.</strong> Run the ANYmal walking policy in Newton; map joint orders; understand observation vectors. <em>Chapter 8.</em></span></li>
+    <li><span><strong>Robot software.</strong> Study the Isaac Sim drive graph and Nav2 bring-up; if you have an RTX machine, run it. <em>Chapter 7.</em></span></li>
+    <li><span><strong>Data from pixels.</strong> Domain randomization, Gaussian splatting basics, why reconstructions degrade off-path. <em>Chapters 9–10.</em></span></li>
+    <li><span><strong>World models.</strong> Read the Cosmos 3 report; write Reasoner prompts and a judge-scoring harness against ground truth. <em>Chapter 11.</em></span></li>
+    <li><span><strong>Systems.</strong> Pick one application (humanoids, AVs, operations, twins) and write down its flywheel and its evaluation plan. <em>Chapters 12–17.</em></span></li>
+  </ol>
+</div>
+</section>
+
+<section class="chapter layer-core" id="decide">
+<div class="col">
+  <p class="part-label">Part V · Practice</p>
+  <h2><span class="n">21</span>Decision guide</h2>
+  <div class="table-scroll"><table>
+    <thead><tr><th>You need</th><th>Reach for</th></tr></thead>
+    <tbody>
+      <tr><td>Contact, forces, exact ground truth</td><td>Physics simulation: Newton or Isaac Sim</td></tr>
+      <tr><td>Thousands of training environments</td><td>Isaac Lab on Newton</td></tr>
+      <tr><td>Cloth, cables, sand, soft bodies</td><td>Newton VBD or MPM solvers</td></tr>
+      <tr><td>To test a ROS 2 stack (Nav2, MoveIt)</td><td>Isaac Sim with the ROS 2 bridge</td></tr>
+      <tr><td>A real location in simulation, fast</td><td>NuRec</td></tr>
+      <tr><td>Photoreal variety from simulator renders</td><td>Cosmos Transfer</td></tr>
+      <tr><td>An automatic success or plausibility check</td><td>Cosmos Reasoner, scored against ground truth</td></tr>
+      <tr><td>One policy across many tasks</td><td>A robot foundation model (GR00T, VLAs), then distill</td></tr>
+      <tr><td>Rare driving scenarios</td><td>Scenario coverage analysis plus Cosmos generation</td></tr>
+      <tr><td>Facility-wide awareness</td><td>Metropolis / VSS vision agents</td></tr>
+      <tr><td>Thousands of design variants per day</td><td>An AI surrogate trained on trusted simulation</td></tr>
+      <tr><td>The policy must run on the robot</td><td>Distillation plus TensorRT on Jetson Thor</td></tr>
+      <tr><td>No NVIDIA GPU</td><td>Newton on CPU for small scenes; client code for everything else</td></tr>
+    </tbody>
+  </table></div>
+</div>
+</section>
+
+<section class="chapter layer-core" id="glossary">
+<div class="col">
+  <p class="part-label">Part V · Practice</p>
+  <h2><span class="n">22</span>Glossary</h2>
+  <dl class="glossary">
+    <dt>Articulation</dt><dd>A tree of rigid bodies connected by joints: a robot. Its root prim carries <code>ArticulationRootAPI</code>.</dd>
+    <dt>AMCL</dt><dd>Adaptive Monte Carlo Localization; the Nav2 node that estimates the robot's pose on a map.</dd>
+    <dt>CUDA graph</dt><dd>A recorded sequence of GPU kernel launches replayed as one unit, removing per-step launch overhead.</dd>
+    <dt>DDS</dt><dd>The publish-subscribe middleware under ROS 2; nodes find each other within a domain ID.</dd>
+    <dt>Domain randomization</dt><dd>Varying appearance and physics during training so a model cannot overfit to one simulator.</dd>
+    <dt>Forward / inverse dynamics</dt><dd>Predicting the next observation from an action / recovering the action from observations.</dd>
+    <dt>Gaussian splatting</dt><dd>A scene made of 3D Gaussians fitted to images and rasterized in real time.</dd>
+    <dt>Hydroelastic contact</dt><dd>Contact computed over a pressure field across an area instead of at points.</dd>
+    <dt>LIVERPS</dt><dd>OpenUSD composition strength: Local, Inherits, Variants, rElocates, References, Payloads, Specializes.</dd>
+    <dt>MPM</dt><dd>Material Point Method; simulates granular and continuum materials with particles on a background grid.</dd>
+    <dt>Payload</dt><dd>A lazily loaded reference in OpenUSD.</dd>
+    <dt>PPO</dt><dd>Proximal Policy Optimization, the default RL algorithm in Isaac Lab's rsl_rl runner.</dd>
+    <dt>SDF</dt><dd>Signed distance field; the distance to a surface at every point, used for fast, tight collision.</dd>
+    <dt>SimReady</dt><dd>A content specification for OpenUSD assets that simulators and robots can use directly.</dd>
+    <dt>Sim-to-real gap</dt><dd>The difference between how a policy behaves in simulation and on hardware.</dd>
+    <dt>Software in the loop</dt><dd>Running the real robot software against a simulated robot.</dd>
+    <dt>Surrogate model</dt><dd>A fast learned approximation of an expensive simulator.</dd>
+    <dt>Teleoperation</dt><dd>A human controlling a robot remotely to record demonstrations.</dd>
+    <dt>VLA</dt><dd>Vision-language-action model: images and instructions in, motor actions out.</dd>
+    <dt>Warp</dt><dd>NVIDIA's Python framework for writing GPU (and CPU) kernels; Newton is built on it.</dd>
+    <dt>World foundation model</dt><dd>A large model that generates or reasons about how the visual world evolves.</dd>
+    <dt>XYZW</dt><dd>Newton's quaternion order (x, y, z, then w). MuJoCo and Isaac use WXYZ.</dd>
+  </dl>
+</div>
+</section>
+
+<section class="chapter layer-core" id="sources">
+<div class="col">
+  <p class="part-label">Part V · Practice</p>
+  <h2><span class="n">23</span>Sources and how they were used</h2>
+  <p>This manual synthesizes talk and tutorial transcripts (NVIDIA GTC 2025, the Developing with Cosmos series, SIGGRAPH 2026 Physical AI Day, an Isaac Sim and Isaac Lab tutorial series, and an Omniverse tutorial series), slides captured from those talks, the papers linked below, and source snapshots of the Newton and Cosmos repositories. A correction on 3 October 2026, revised 3 November 2026, checked the printed claims against those papers, the repositories, and NVIDIA product pages. Talk lines that were not found in a paper or product page were removed or marked as not found. Measurements marked <span class="src">measured</span> were taken by the author on a 4-core CPU and were not re-run in that correction. They say nothing about GPU throughput. One Newton slide deck in the source collection was marked confidential and was not used.</p>
+  <h3>Read next</h3>
+  <ul>
+    <li><a href="https://github.com/newton-physics/newton">Newton</a> and its <a href="https://newton-physics.github.io/newton/latest/guide/overview.html">documentation</a>; <a href="https://github.com/NVIDIA/warp">NVIDIA Warp</a>; <a href="https://github.com/google-deepmind/mujoco_warp">MuJoCo Warp</a></li>
+    <li><a href="https://github.com/NVIDIA/cosmos">NVIDIA Cosmos</a> and the <a href="https://research.nvidia.com/labs/cosmos-lab/cosmos3/technical-report.pdf">Cosmos 3 technical report</a></li>
+    <li><a href="https://arxiv.org/abs/2511.00062">World Simulation with Video Foundation Models for Physical AI</a> (Cosmos Predict 2.5 and Transfer 2.5)</li>
+    <li>Daviet, <em>Mixed Material Point Methods for Stiff Elastoplasticity</em>, SIGGRAPH 2026; Chen et al., <a href="https://arxiv.org/abs/2604.15513">Divide and Truncate</a></li>
+    <li><a href="https://github.com/isaac-sim/IsaacLab">Isaac Lab</a>, the Isaac Sim documentation, and <a href="https://openusd.org/">OpenUSD</a></li>
+    <li>NVIDIA Physical AI Day at SIGGRAPH 2026; NVIDIA GTC 2025 sessions on Cosmos, GR00T, humanoids, AV simulation, Metropolis and smart cities</li>
+  </ul>
+</div>
+</section>
+
+<footer class="sig">
+  <div class="col">
+    <b>Pankaj Somkuwar</b><br>
+    AI Engineer · AI Product Manager · AI Solutions Architect
+    <div class="contact">
+      <a href="https://www.linkedin.com/in/pankaj-somkuwar/">LinkedIn</a>
+      <a href="https://github.com/Pankaj-Leo">GitHub</a>
+      <a href="https://www.pankajsomkuwarai.com">pankajsomkuwarai.com</a>
+      <span>pankaj.som1610@gmail.com</span>
+    </div>
+  </div>
+</footer>
+</main>
+</div>
+
+<script>
+(function () {
+  // Copy buttons on code blocks; fall back to selecting the text if the clipboard is refused.
+  document.querySelectorAll("pre").forEach(function (pre) {
+    var btn = document.createElement("button");
+    btn.className = "copy"; btn.type = "button"; btn.textContent = "Copy";
+    btn.addEventListener("click", function () {
+      var text = pre.querySelector("code").innerText;
+      var done = function () { btn.textContent = "Copied"; setTimeout(function () { btn.textContent = "Copy"; }, 1400); };
+      var select = function () { var r = document.createRange(); r.selectNodeContents(pre.querySelector("code")); var s = window.getSelection(); s.removeAllRanges(); s.addRange(r); btn.textContent = "Selected"; };
+      try { navigator.clipboard.writeText(text).then(done, select); } catch (e) { select(); }
+    });
+    pre.appendChild(btn);
+  });
+  // Highlight the chapter in view in the index. The page reads fine without this.
+  var links = {};
+  document.querySelectorAll("#toc-list a").forEach(function (a) { links[a.getAttribute("href").slice(1)] = a; });
+  if (!("IntersectionObserver" in window)) return;
+  var obs = new IntersectionObserver(function (entries) {
+    entries.forEach(function (e) {
+      if (e.isIntersecting && links[e.target.id]) {
+        Object.values(links).forEach(function (a) { a.classList.remove("active"); });
+        links[e.target.id].classList.add("active");
+      }
+    });
+  }, { rootMargin: "-20% 0px -70% 0px" });
+  document.querySelectorAll("section.chapter").forEach(function (s) { obs.observe(s); });
+})();
+</script>
+</body>
+</html>

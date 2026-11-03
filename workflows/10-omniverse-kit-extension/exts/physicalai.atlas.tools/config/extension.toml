@@ -1,0 +1,26 @@
+# Extension manifest (Introduction 03: "title" is the visible name; docs/README.md is the text in the Extension
+# Manager; the python module must match the package folders). Layout follows the Kit App Template's
+# "Python UI Extension" (Introduction 04).
+[package]
+version = "0.1.0"
+title = "Physical AI Atlas Tools"
+description = "Load a robot USD, randomize lighting, and switch USD variant sets from one window."
+authors = ["Physical AI workflow atlas"]
+category = "Simulation"
+keywords = ["robotics", "usd", "variants", "lighting", "simready"]
+readme = "docs/README.md"
+changelog = "docs/CHANGELOG.md"
+repository = ""
+
+[dependencies]
+"omni.kit.uiapp" = {}
+"omni.ui" = {}
+"omni.usd" = {}
+"omni.kit.commands" = {}
+"omni.kit.menu.utils" = {}
+
+[[python.module]]
+name = "physicalai.atlas.tools"
+
+[[test]]
+dependencies = ["omni.kit.ui_test"]

@@ -1,0 +1,58 @@
+[build-system]
+requires = ["hatchling>=1.25"]
+build-backend = "hatchling.build"
+
+[project]
+name = "sand-solvers-worldmodels"
+version = "0.1.0"
+description = "Quadruped on rigid and granular terrain in Newton, judged by Cosmos 3: solver bake-off, MPM terrain sweep, world-model critic."
+readme = "README.md"
+requires-python = ">=3.10"
+license = { text = "Apache-2.0" }
+dependencies = [
+    # Tested with newton 1.7.0.dev0 installed editable from the local newton-main snapshot
+    # (warp-lang 1.17.0, mujoco 3.12.0, mujoco-warp 3.12.0). Pin to a release when 1.7 ships.
+    "newton[examples]>=1.6",
+    "numpy>=1.26",
+    "matplotlib>=3.8",
+    "pandas>=2.1",
+]
+
+[project.optional-dependencies]
+cosmos = ["openai>=1.40", "requests>=2.31"]
+dev = ["pytest>=8", "ruff>=0.6"]
+
+[project.scripts]
+ssw-bakeoff = "ssw.bakeoff:main"
+ssw-terrain = "ssw.terrain:main"
+ssw-judge = "ssw.judge:main"
+ssw-transfer = "ssw.transfer:main"
+
+[tool.hatch.build.targets.wheel]
+packages = ["src/ssw"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+pythonpath = ["src"]
+markers = [
+    "slow: runs a short Newton simulation (tens of seconds on first run due to kernel compilation)",
+    "gpu: needs a CUDA GPU; skipped automatically when Warp finds none",
+]
+
+[tool.ruff]
+line-length = 120
+target-version = "py310"
+src = ["src", "tests"]
+
+[tool.ruff.lint]
+select = ["E", "F", "W", "I", "B", "UP", "PL", "RUF", "SIM", "NPY"]
+ignore = [
+    "PLR0912", # too many branches
+    "PLR0913", # too many arguments
+    "PLR0915", # too many statements
+    "PLR2004", # magic values in comparisons are fine for physics thresholds
+    "PLC0415", # local imports keep newton/warp/matplotlib optional at import time
+]
+
+[tool.ruff.lint.isort]
+known-first-party = ["ssw"]

@@ -1,0 +1,27 @@
+{
+  "date_utc": "2026-10-03T18:36:04+00:00",
+  "python": "3.11.15",
+  "platform": "Linux-6.18.44-fc-v64-x86_64-with-glibc2.39",
+  "newton": "1.7.0.dev0",
+  "warp": "1.17.0",
+  "numpy": "2.4.6",
+  "last_invocation_config": {
+    "solver": "mujoco_warp",
+    "fps": 100,
+    "substeps": 10,
+    "warmup_frames": 5,
+    "frames": 20,
+    "device": "cpu",
+    "graph": true,
+    "drop_height": 0.7
+  },
+  "note": "CPU-only container, no GPU. Per-row settings are columns of the CSV.",
+  "cpu_count": 4,
+  "invocations": [
+    "scale_benchmark.py --device cpu --solver xpbd --worlds 1 2 4 --no-graph --frames 50",
+    "scale_benchmark.py --device cpu --solver xpbd --worlds 1 2 4 16 64 --graph --frames 50 --append",
+    "scale_benchmark.py --device cpu --solver mujoco_warp --worlds 1 2 4 --no-graph --frames 20 --append",
+    "scale_benchmark.py --device cpu --solver mujoco_warp --worlds 1 4 16 --graph --frames 20 --append",
+    "render_clips.py --device cpu --worlds 3 --width 160 --height 90 --frames 121"
+  ]
+}

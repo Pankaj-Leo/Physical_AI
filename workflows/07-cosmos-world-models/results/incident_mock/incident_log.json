@@ -1,0 +1,298 @@
+{
+  "agent": "incident_agent.py (Cosmos 3 Reasoner pattern, roadmap T5)",
+  "mode": "mock",
+  "note": "MOCK: replies are hand-written fixtures in tests/fixtures/, not Cosmos output",
+  "model": "nvidia/Cosmos3-Nano",
+  "settings_by_step": {
+    "timeline": {
+      "model": "nvidia/Cosmos3-Nano",
+      "max_tokens": 4096,
+      "temperature": 0.7,
+      "top_p": 0.8,
+      "presence_penalty": 1.5,
+      "top_k": 20,
+      "repetition_penalty": 1.0,
+      "video_sampling": {
+        "num_frames": -1,
+        "fps": 4.0
+      },
+      "think_suffix": false
+    },
+    "hazard": {
+      "model": "nvidia/Cosmos3-Nano",
+      "max_tokens": 4096,
+      "temperature": 0.6,
+      "top_p": 0.95,
+      "presence_penalty": 0.0,
+      "top_k": 20,
+      "repetition_penalty": 1.0,
+      "video_sampling": {
+        "num_frames": -1,
+        "fps": 4.0
+      },
+      "think_suffix": true
+    },
+    "when": {
+      "model": "nvidia/Cosmos3-Nano",
+      "max_tokens": 4096,
+      "temperature": 0.7,
+      "top_p": 0.8,
+      "presence_penalty": 1.5,
+      "top_k": 20,
+      "repetition_penalty": 1.0,
+      "video_sampling": {
+        "num_frames": -1,
+        "fps": 4.0
+      },
+      "think_suffix": false
+    },
+    "ground": {
+      "model": "nvidia/Cosmos3-Nano",
+      "max_tokens": 4096,
+      "temperature": 0.7,
+      "top_p": 0.8,
+      "presence_penalty": 1.5,
+      "top_k": 20,
+      "repetition_penalty": 1.0,
+      "video_sampling": null,
+      "think_suffix": false
+    }
+  },
+  "hazards": {
+    "near_miss": {
+      "prompt_id": "warehouse.hazard.near_miss",
+      "event": "A person comes within about two meters of a moving forklift or mobile robot",
+      "target": "the person closest to the moving vehicle and that vehicle"
+    },
+    "zone_violation": {
+      "prompt_id": "warehouse.hazard.zone_violation",
+      "event": "A person walks into a floor area marked as restricted",
+      "target": "the person inside the restricted zone"
+    },
+    "fallen_load": {
+      "prompt_id": "warehouse.hazard.fallen_load",
+      "event": "A box, pallet load, or other object falls onto the floor",
+      "target": "the fallen object"
+    }
+  },
+  "clips": [
+    {
+      "id": "wh_01",
+      "clip": "/data/warehouse/wh_01.mp4",
+      "condition": {
+        "lighting": "day",
+        "camera": "ceiling"
+      },
+      "timeline": [
+        {
+          "start": 0.0,
+          "end": 3.0,
+          "caption": "A forklift carries a pallet down the main aisle while a worker walks along the racks on the left."
+        },
+        {
+          "start": 3.0,
+          "end": 5.6,
+          "caption": "The worker steps into the aisle and the forklift passes close to him."
+        },
+        {
+          "start": 5.6,
+          "end": 12.0,
+          "caption": "The forklift continues to the loading bay and the worker returns to the racks."
+        }
+      ],
+      "verdicts": {
+        "near_miss": "A",
+        "zone_violation": "C",
+        "fallen_load": "C"
+      },
+      "malformed": [],
+      "missing_replies": []
+    },
+    {
+      "id": "wh_02",
+      "clip": "/data/warehouse/wh_02.mp4",
+      "condition": {
+        "lighting": "night",
+        "camera": "ceiling"
+      },
+      "timeline": [
+        {
+          "start": 0.0,
+          "end": 5.8,
+          "caption": "A dim aisle at night; a parked forklift stands near the dock and a worker walks past it."
+        },
+        {
+          "start": 5.8,
+          "end": 9.1,
+          "caption": "The worker crosses into the hatched area in front of the robot cell."
+        },
+        {
+          "start": 9.1,
+          "end": 12.0,
+          "caption": "The worker leaves the area toward the dock."
+        }
+      ],
+      "verdicts": {
+        "near_miss": "A",
+        "zone_violation": "A",
+        "fallen_load": "C"
+      },
+      "malformed": [],
+      "missing_replies": []
+    },
+    {
+      "id": "wh_03",
+      "clip": "/data/warehouse/wh_03.mp4",
+      "condition": {
+        "lighting": "day",
+        "camera": "forklift"
+      },
+      "timeline": [
+        {
+          "start": 0.0,
+          "end": 12.0,
+          "caption": "View from a forklift driving slowly along an empty aisle between tall racks."
+        }
+      ],
+      "verdicts": {
+        "near_miss": "C",
+        "zone_violation": null,
+        "fallen_load": "C"
+      },
+      "malformed": [
+        "wh_03/hazard/zone_violation"
+      ],
+      "missing_replies": []
+    },
+    {
+      "id": "wh_04",
+      "clip": "/data/warehouse/wh_04.mp4",
+      "condition": {
+        "lighting": "night",
+        "camera": "forklift"
+      },
+      "timeline": [
+        {
+          "start": 0.0,
+          "end": 2.0,
+          "caption": "Night view from a forklift approaching a stack of boxes."
+        },
+        {
+          "start": 2.0,
+          "end": 12.0,
+          "caption": "The forklift reverses and turns toward the next aisle."
+        }
+      ],
+      "verdicts": {
+        "near_miss": "C",
+        "zone_violation": "C",
+        "fallen_load": "B"
+      },
+      "malformed": [],
+      "missing_replies": []
+    }
+  ],
+  "incidents": [
+    {
+      "clip_id": "wh_01",
+      "type": "near_miss",
+      "severity": "high",
+      "start_s": 3.2,
+      "end_s": 5.9,
+      "keyframe": "keyframes/wh_01_near_miss.jpg",
+      "keyframe_t_s": 4.55,
+      "boxes": [
+        {
+          "label": "person",
+          "bbox_2d": [
+            402.0,
+            318.0,
+            588.0,
+            861.0
+          ],
+          "valid": true,
+          "bbox_px": [
+            515,
+            229,
+            753,
+            620
+          ]
+        },
+        {
+          "label": "forklift",
+          "bbox_2d": [
+            555.0,
+            240.0,
+            930.0,
+            905.0
+          ],
+          "valid": true,
+          "bbox_px": [
+            710,
+            173,
+            1190,
+            652
+          ]
+        }
+      ],
+      "evidence": "The worker leaves the walkway at about three seconds and enters the aisle. The forklift is moving and passes him with roughly one meter of clearance. That is within two meters of a moving forklift.",
+      "flags": []
+    },
+    {
+      "clip_id": "wh_02",
+      "type": "near_miss",
+      "severity": "high",
+      "start_s": 0.0,
+      "end_s": 12.0,
+      "keyframe": "keyframes/wh_02_near_miss.jpg",
+      "keyframe_t_s": 6.0,
+      "boxes": [
+        {
+          "label": "person and forklift",
+          "bbox_2d": [
+            120.0,
+            400.0,
+            1040.0,
+            980.0
+          ],
+          "valid": false,
+          "issue": "outside 0-1000"
+        }
+      ],
+      "evidence": "A worker walks right next to the forklift near the dock. The forklift lights are on, so it may be moving. The distance is less than two meters.",
+      "flags": [
+        "timestamp_unparsed_used_full_clip",
+        "invalid_box:outside 0-1000"
+      ]
+    },
+    {
+      "clip_id": "wh_02",
+      "type": "zone_violation",
+      "severity": "medium",
+      "start_s": 5.5,
+      "end_s": 9.2,
+      "keyframe": "keyframes/wh_02_zone_violation.jpg",
+      "keyframe_t_s": 7.35,
+      "boxes": [
+        {
+          "label": "person inside the restricted zone",
+          "bbox_2d": [
+            598.0,
+            205.0,
+            712.0,
+            640.0
+          ],
+          "valid": true,
+          "bbox_px": [
+            765,
+            148,
+            911,
+            461
+          ]
+        }
+      ],
+      "evidence": "The floor in front of the robot cell is marked with diagonal hatching. Between about six and nine seconds the worker walks across it.",
+      "flags": []
+    }
+  ]
+}

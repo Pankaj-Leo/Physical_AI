@@ -1,0 +1,7 @@
+# Generated USD layers and composition exports (regenerate with: python run_all.py)
+out/
+*.usd
+*.usdc
+*.usdz
+# The one committed sample layer
+!sample/asset_physics.usda
